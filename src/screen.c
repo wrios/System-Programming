@@ -7,6 +7,30 @@
 
 #include "screen.h"
 
+void pintar_pantalla(){
+    //print("ASD", 20, 20, 5);
+    
+    for(int i = 0; i < 50; i++){   
+        for(int j = 0; j < 50; j++){
+            print("a", i, j, 0b01110000);
+        }
+    }
+
+    for(int i = 59; i < 71; i++){   
+        for(int j = 5; j < 8; j++){
+            print("a", i, j, 0b01000000);
+        }
+    }
+
+    for(int i = 59; i < 71; i++){   
+        for(int j = 30; j < 33; j++){
+            print("a", i, j, 0b00010000);
+        }
+    }
+
+}
+
+
 void print(const char* text, uint32_t x, uint32_t y, uint16_t attr) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO; // magia
     int32_t i;

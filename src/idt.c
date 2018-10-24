@@ -31,15 +31,24 @@ idt_descriptor IDT_DESC = {
     }
 */
 
-/*
+
 #define IDT_ENTRY(numero)                                                                          \
     idt[numero].offset_0_15 = (uint16_t) ((uint32_t)(&_isr ## numero) & (uint32_t) 0xFFFF);        \
-    idt[numero].segsel = (uint16_t) 0x00;                                                          \
-    idt[numero].attr = (uint16_t) 0x0000;                                                          \
+    idt[numero].segsel = (uint16_t) 0xb0;                                                          \
+    idt[numero].attr = (uint16_t) 0b10001110000;                                                          \
     idt[numero].offset_16_31 = (uint16_t) ((uint32_t)(&_isr ## numero) >> 16 & (uint32_t) 0xFFFF);
-*/
+
 
 
 void idt_init() {
+
+    
+    for(int i = 0; i < 20; i++) 
+        IDT_ENTRY(i);
+    
+
+
+
+
     // Excepciones
 }

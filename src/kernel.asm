@@ -9,6 +9,8 @@ global start
 
 extern GDT_DESC
 extern IDT_DESC
+extern print
+extern pintar_pantalla
 
 ;; Saltear seccion de datos
 jmp start
@@ -40,8 +42,8 @@ start:
     int 10h ; load 8x8 font
 
     ; Imprimir mensaje de bienvenida
+    ;print_text_rm start_rm_msg, start_rm_len, 0x07, 0, 0    
     
-
     ; Habilitar A20
     call A20_enable
     ; Cargar la GDT
@@ -51,32 +53,36 @@ start:
     or eax, 1
     mov cr0, eax
     ; Saltar a modo protegido
+    xchg bx, bx
+
     jmp 0xb0:MP 
     ; Pasamos a modo protegido, 8*22 = 0xb0
     ; posicion 22 de la gdt, el descriptor del segmento codigo kernel
-    ;print_text_rm start_rm_msg, start_rm_len, 0x07, 0, 0
 
-
-MP:
 BITS 32
-
+MP:
     ; Establecer selectores de segmentos
-    mov ax, 0x17 ; Indice de la GDT 23 - segmento de data de kernel
+   ; xchg bx, bx
+
+    xor eax, eax
+    mov ax, 0xB8 ; Indice de la GDT 23*8 (bytes) - segmento de data de kernel
     mov ds, ax
     mov es, ax
     mov gs, ax
-    mov ss, ax
-    xchg bx, bx    
-    mov ax, 0x1A ; Indice de nuestro segmento de video para el kernel 
-    
+    mov ss, ax    
+    mov ax, 0xD0 ; Indice de nuestro segmento de video para el kernel 26*8 (bytes)
     mov fs, ax
     ; Establecer la base de la pila
-;    mov ebp, 0x2700
-    
+    mov ebp, 0x27000
+    mov esp, 0x27000
     ; Imprimir mensaje de bienvenida
-
+    call pintar_pantalla    
+    
     ; Inicializar pantalla
     
+   ; mov ax, 0xD0 ; Indice de nuestro segmento de video para el kernel 26*8 (bytes)
+   ; mov fs, ax
+   ; call pintar_pantalla
     ; Inicializar el manejador de memoria
  
     ; Inicializar el directorio de paginas
