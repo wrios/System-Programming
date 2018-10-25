@@ -10,6 +10,7 @@
 #include "isr.h"
 #include "tss.h"
 
+
 idt_entry idt[255] = { };
 
 idt_descriptor IDT_DESC = {
@@ -31,10 +32,9 @@ idt_descriptor IDT_DESC = {
     }
 */
 
-
 #define IDT_ENTRY(numero, attr_numero)                                                                          \
     idt[numero].offset_0_15 = (uint16_t) ((uint32_t)(&_isr ## numero) & (uint32_t) 0xFFFF);        \
-    idt[numero].segsel = (uint16_t) 0x20;                                                          \
+    idt[numero].segsel = (uint16_t) 0xb0;                                                          \
     idt[numero].attr = (uint16_t) attr_numero;                                                     \
     idt[numero].offset_16_31 = (uint16_t) ((uint32_t)(&_isr ## numero) >> 16 & (uint32_t) 0xFFFF);
 /*
@@ -42,6 +42,8 @@ idt_descriptor IDT_DESC = {
     attr atributos del vector de interrupciones
     offset_0_15 + offset_16_31 offset del segmento
 */
+
+
 
 
 void idt_init() {
@@ -64,9 +66,14 @@ void idt_init() {
     IDT_ENTRY(17,(uint16_t)0x8E00);
     IDT_ENTRY(18,(uint16_t)0x8E00);
     IDT_ENTRY(19,(uint16_t)0x8E00);
-    //IDT_ENTRY(71,(uint16_t)0x8E00);
-    //IDT_ENTRY(73,(uint16_t)0x8E00);
-    //IDT_ENTRY(76,(uint16_t)0xEE00);
+
+    IDT_ENTRY(71,(uint16_t)0x8E00); 
+    IDT_ENTRY(73,(uint16_t)0x8E00);
+    IDT_ENTRY(76,(uint16_t)0xEE00); // dudosos atributos
+
+    IDT_ENTRY(32,(uint16_t)0x8E00);
+    IDT_ENTRY(33,(uint16_t)0x8E00);
+    
         /*
         [15,20..31] reservadas por intel(no usar)
         [32..255] A definir por el usuario

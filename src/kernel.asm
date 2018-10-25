@@ -11,7 +11,7 @@ extern GDT_DESC
 extern IDT_DESC
 extern print
 extern pintar_pantalla
-extern idt_inicializar
+extern idt_init
 
 extern pic_reset
 extern pic_enable
@@ -32,6 +32,9 @@ start_pm_len equ    $ - start_pm_msg
 ;;
 ;; Seccion de código.
 ;; -------------------------------------------------------------------------- ;;
+
+   ; xchg bx, bx
+
 
 ;; Punto de entrada del kernel.
 BITS 16
@@ -58,7 +61,6 @@ start:
     or eax, 1
     mov cr0, eax
     ; Saltar a modo protegido
-    xchg bx, bx
 
     jmp 0xb0:MP 
     ; Pasamos a modo protegido, 8*22 = 0xb0
@@ -67,7 +69,6 @@ start:
 BITS 32
 MP:
     ; Establecer selectores de segmentos
-   ; xchg bx, bx
 
     xor eax, eax
     mov ax, 0xB8 ; Indice de la GDT 23*8 (bytes) - segmento de data de kernel
@@ -103,15 +104,15 @@ MP:
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
-    call idt_inicializar
+    call idt_init
     ; Cargar IDT
-    LIDT [IDT_DESC]
-    ; Configurar controlador de interrupciones
+    xchg bx, bx
 
+    lidt [IDT_DESC]
+    ; Configurar controlador de interrupciones
     ; Cargar tarea inicial
-    
-    ;pic_reset remapeo
-    ;pic_enable
+    call pic_reset 
+    call pic_enable
     ;pic_disable
     
     ;despues de remapear el PIC y habilitarlo, tenemos que la interrupción
