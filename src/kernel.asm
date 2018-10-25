@@ -11,6 +11,11 @@ extern GDT_DESC
 extern IDT_DESC
 extern print
 extern pintar_pantalla
+extern idt_inicializar
+
+extern pic_reset
+extern pic_enable
+extern pic_disable
 
 ;; Saltear seccion de datos
 jmp start
@@ -98,15 +103,28 @@ MP:
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
-    
+    call idt_inicializar
     ; Cargar IDT
- 
+    LIDT [IDT_DESC]
     ; Configurar controlador de interrupciones
 
     ; Cargar tarea inicial
+    
+    ;pic_reset remapeo
+    ;pic_enable
+    ;pic_disable
+    
+    ;despues de remapear el PIC y habilitarlo, tenemos que la interrupción
+    ;de reloj está mapeada a la interrupción 32 y el  teclado a la 33
+    ;resta habilitar las interrupciones con la intrucción sti
+
+    ;Leemos del teclado a través del puerto 0x60(in al, 0x60)
+
+    ;IRQ0 para timer
+    ;IRQ1 para teclado
 
     ; Habilitar interrupciones
-
+    sti ;se activa el flag IF del registro EFLAGS
     ; Saltar a la primera tarea: Idle
 
     ; Ciclar infinitamente (por si algo sale mal...)
