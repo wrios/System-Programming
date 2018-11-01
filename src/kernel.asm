@@ -17,6 +17,12 @@ extern pic_reset
 extern pic_enable
 extern pic_disable
 
+extern _isr32
+extern _isr33
+
+extern mmu_init
+extern mmu_initKernelDir
+
 ;; Saltear seccion de datos
 jmp start
 
@@ -87,27 +93,33 @@ MP:
     ; Inicializar pantalla
     
    ; mov ax, 0xD0 ; Indice de nuestro segmento de video para el kernel 26*8 (bytes)
-   ; mov fs, ax
-   ; call pintar_pantalla
     ; Inicializar el manejador de memoria
- 
+    ;call mmu_init
     ; Inicializar el directorio de paginas
+    call mmu_initKernelDir    
     
     ; Cargar directorio de paginas
-
-    ; Habilitar paginacion
+    ;call mmu_init
+    mov eax, 0x27000000; page_directory
+    ;shl eax, 12
     
+    mov cr3, eax
+    ; Habilitar paginacion
+    mov eax, cr0
+    
+    or eax, 0x80000000 ;habilito Unidad de paginación
+    xchg bx, bx
+    mov cr0, eax
     ; Inicializar tss
-
+    
     ; Inicializar tss de la tarea Idle
 
     ; Inicializar el scheduler
 
+
     ; Inicializar la IDT
     call idt_init
     ; Cargar IDT
-    xchg bx, bx
-
     lidt [IDT_DESC]
     ; Configurar controlador de interrupciones
     ; Cargar tarea inicial
@@ -124,9 +136,26 @@ MP:
     ;IRQ0 para timer
     ;IRQ1 para teclado
 
+    ; Saltar a la primera tarea: Idle
+    
+    ;Para pasar a paginación, hacer un Aling 4096
+    ;Activar paginación
+    ;Armar un directorio de paginas y tablas de paginas
+    ;Poner en CR3 la dirección base del directorio de páginas
+
+
     ; Habilitar interrupciones
     sti ;se activa el flag IF del registro EFLAGS
-    ; Saltar a la primera tarea: Idle
+
+
+    ;Limpiar bits PCD y PWT de CR3
+        ;lo hicimos al shiftear
+    
+    ;setear el bit PG de CR0
+
+    ;int 0x47
+    
+    
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF

@@ -107,7 +107,27 @@ gdt_entry gdt[GDT_COUNT] = {
         (uint8_t)     0x01,           /* db           */
         (uint8_t)     0x01,           /* g            */
         (uint8_t)     0x00,           /* base[31:24]  */
-    }
+    }/*,
+        [GDT_ENTRY_TASK_1] = (gdt_entry) {
+        //limit de una pagina 0x00FFF
+        //base 0x400000 (o + i*kb , donde i es la i-esima tarea)
+        (uint16_t)    0x00F,         // limit[0:15] 
+        (uint16_t)    0x0000,         // base[0:15]  
+        (uint8_t)     0x40,           // base[23:16] 
+        //type 10B1(B es el bit de Busy, inicialmente en 0)
+        (uint8_t)     0x09,           // type        
+        //no es de sistema(s = 0)
+        (uint8_t)     0x00,           // s           
+        (uint8_t)     0x03,           // dpl         
+        (uint8_t)     0x01,           // p           
+        (uint8_t)     0xFF,           // limit[16:19]
+        (uint8_t)     0x00,           // avl         
+        (uint8_t)     0x00,           // l           
+        (uint8_t)     0x01,           // db          
+
+        (uint8_t)     0x00,           // g           
+        (uint8_t)     0x00,           // base[31:24]  
+    }*/
 
 };
 

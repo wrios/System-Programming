@@ -13,7 +13,7 @@ sched_task_selector:   dw 0x00
 
 ;; PIC
 extern pic_finish1
-
+extern pic_finish2
 ;; Sched
 extern sched_nextTask
 
@@ -88,6 +88,40 @@ error_mp_len_73: equ    $ - error_mp_msg_73
 
 error_mp_msg_76: db     'Error! Interrupcion divide, numero: 76'
 error_mp_len_76: equ    $ - error_mp_msg_76
+
+mp_print_0: db     '0'
+mp_len_0: equ    $ - mp_print_0
+
+mp_print_1: db     '1'
+mp_len_1: equ    $ - mp_print_1
+
+mp_print_2: db     '2'
+mp_len_2: equ    $ - mp_print_2
+
+mp_print_3: db     '3'
+mp_len_3: equ    $ - mp_print_3
+
+mp_print_4: db     '4'
+mp_len_4: equ    $ - mp_print_4
+
+mp_print_5: db     '5'
+mp_len_5: equ    $ - mp_print_5
+
+mp_print_6: db     '6'
+mp_len_6: equ    $ - mp_print_6
+
+mp_print_7: db     '7'
+mp_len_7: equ    $ - mp_print_7
+
+mp_print_8: db     '8'
+mp_len_8: equ    $ - mp_print_8
+
+mp_print_9: db     '9'
+mp_len_9: equ    $ - mp_print_9
+
+mp_print_: db     ' '
+mp_len_: equ    $ - mp_print_
+
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
@@ -99,7 +133,7 @@ global _isr%1
 _isr%1:
     mov eax, %1
     print_text_pm error_mp_msg_%1, error_mp_len_%1, 0x07, 0, 0
-    xchg bx, bx
+    ;xchg bx, bx
 
     jmp 0xB0:0xCACA
     ;jmp off_set_idle:segmento_idle, salta a la tarea idle (codigo en 0x14000)
@@ -140,8 +174,14 @@ ISR 19
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
 global _isr32
-_isr32:
+;leer el tick de reloj desde el Pic1(IRQ0)
 
+_isr32:
+        pushad
+        call pic_finish1
+        call nextClock
+        ;xchg bx, bx
+        popad
         iret
 
 
@@ -149,22 +189,109 @@ _isr32:
 ;; -------------------------------------------------------------------------- ;;
 global _isr33
 _isr33:
+        pushad
+        call pic_finish1
+        xor eax, eax
+        in al, 60h
+        ;xchg bx, bx
 
+        cmp eax, 0x02
+        je .uno
+
+        cmp eax, 0x03
+        je .dos
+
+        cmp eax, 0x04
+        je .tres
+
+        cmp eax, 0x05
+        je .cuatro
+
+        cmp eax, 0x06
+        je .cinco
+
+        cmp eax, 0x07
+        je .seis
+
+        cmp eax, 0x08
+        je .siete
+
+        cmp eax, 0x09
+        je .ocho
+
+        cmp eax, 0x0a
+        je .nueve
+
+        cmp eax, 0x0b
+        je .cero
+
+        print_text_pm mp_print_, mp_len_, 0x0f, 0, 79 
+        jmp .fin
+
+.cero:
+        print_text_pm mp_print_0, mp_len_0, 0x0f, 0, 79 
+        jmp .fin
+
+.uno:
+        print_text_pm mp_print_1, mp_len_1, 0x0f, 0, 79
+        jmp .fin
+
+.dos:
+        print_text_pm mp_print_2, mp_len_2, 0x0f, 0, 79
+        jmp .fin
+
+.tres:
+        print_text_pm mp_print_3, mp_len_3, 0x0f, 0, 79
+        jmp .fin
+
+.cuatro:
+        print_text_pm mp_print_4, mp_len_4, 0x0f, 0, 79
+        jmp .fin
+
+.cinco:
+        print_text_pm mp_print_5, mp_len_5, 0x0f, 0, 79
+        jmp .fin
+
+.seis:
+        print_text_pm mp_print_6, mp_len_6, 0x0f, 0, 79
+        jmp .fin
+
+.siete:
+        print_text_pm mp_print_7, mp_len_7, 0x0f, 0, 79
+        jmp .fin
+
+.ocho:
+        print_text_pm mp_print_8, mp_len_8, 0x0f, 0, 79
+        jmp .fin
+
+.nueve:
+        print_text_pm mp_print_9, mp_len_9, 0x0f, 0, 79
+        jmp .fin
+
+.fin:
+        popad
         iret
 
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
 global _isr71
 _isr71:
-
+        pushad
+        ;xchg bx, bx; bkp
+        mov eax, 0x42
+        popad
         iret
+
 global _isr73
 _isr73:
-
+        pushad
+        popad
         iret
+
 global _isr76
 _isr76:
-
+        pushad
+        popad
         iret                
 
 

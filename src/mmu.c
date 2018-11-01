@@ -7,83 +7,139 @@
 
 #include "mmu.h"
 
-
+uint32_t next_page_free_task =0x08000000;
+uint8_t PERM_USER = 1;
+uint8_t PERM_WRITE = 1;
+uint32_t Table_size = 0x0400000;
+uint32_t Directory_size = 1024;
+uint32_t next_page_free = 0;
+uint32_t cr3;
 void mmu_init() {
+    //despues de lograr activar paginascion(ejercicio 5)
+    //Manejo de memoria para manejar area libre de kernel(0x100000 a 0x3FFFFF)
+    //Manejo de memoria para manejar area libre de tareas(0x400000 a 0x7FFFFF)
+    //(sug: dos contadores)
+}
+
+uint32_t getCR3(){
+    return cr3;
 }
 
 uint32_t mmu_nextFreeKernelPage() {
-    return 0;
+    uint32_t page_free = next_page_free;
+    //next_page_free += Page_Size(4Kb);
+    next_page_free += 0x1000;
+    return page_free;
 }
 
 uint32_t mmu_nextFreeTaskPage() {
-    return 0;
+    uint32_t page_free_task = next_page_free_task;
+    next_page_free_task += 0x1000;
+    return next_page_free_task;
+}
+
+void setPageTable(page_table_entry* new_page_table_entry, uint32_t attrs){
+    new_page_table_entry->us = ((attrs << 29)>>31);
+    new_page_table_entry->rw = ((attrs << 30)>>31);
+    new_page_table_entry->p = ((attrs << 31)>>31);
 }
 
 void mmu_mapPage(uint32_t virtual, uint32_t cr3, uint32_t phy, uint32_t attrs) {
-    /*uint32_t PDE_OFF = virtual >> 22;
-    uint32_t PTE_OFF = (virtual << 10) >> 22;
-    pdt_entry pd[] = (*pd) (cr3 >> 12) << 12;
-    pdt_entry pdt_ent = pd[PDE_OFF];s
-    if (pdt_ent.p == 0){
-        pt_entry ptabledir[] = (pt_entry*) new_kernel_page();
-        pdt_entry newpd = getNewPD(); // esto lo pone todo en cero 
-        newpd.base = &(ptabledir >> 12); // is this real or is just fanta sea?
-        newpd.p = 0x1;
-        newpd.us = PERM_USER;
-        newpd.rw = PERM_WRITE;
-        pd[pde_off] = newpd;
+   /*
+    //breakpoint();
+   ///Indice del page directory & Indice del page table///
+    uint32_t PDE_OFF = virtual >> 22;//off_set_directory
+    uint32_t PTE_OFF = (virtual << 10) >> 22;//off_set_table
+    ///dirección base del page directory///
+    page_dir_entry* pd = (page_dir_entry*) ((cr3 >> 12) << 12);
+    page_dir_entry pd_ent = pd[PDE_OFF];//selector de pagina
+    page_table_entry* new_page_table_entry;
+    ///Hay que chequar que la page table a la que referencia el pd_ent exista///
+    if (pd_ent.p == 0){//crear y settear la page_table_entry
+    //agregar una función de set(page_table_entry*, uint32_t attrs), sette los atributos
+        new_page_table_entry = (page_table_entry*) mmu_nextFreeKernelPage();//new_kernel_page();        
+        setPageTable(new_page_table_entry, attrs);
+        ////la dirección es multiplo de 4k////
+        pd[PDE_OFF].base = ((uint32_t)new_page_table_entry >> 12);
+    }else{//si esta presente, alcanza con asignarle la dirección a la que apunta la 
+    //page directory[PDE_OFF] para decirle que ese es el lugar donde empieza
+        ////la dirección es multiplo de 4k////
+        new_page_table_entry = (page_table_entry*) (pd[PDE_OFF].base << 12);
     }
-    pt_entry pt = (*pt_entry) *(pd[PDE_OFF].base[PTE_OFF]) << 12;
-    pt_entry pte =pt[PTE_OFF];
-    pt.base = (fisica >> 12);
-    pt.rw = getRw(attr);
-    pt.p = 0x1;
-    pt[PTE_OFF] = PTE;
-    TLBFLUSH();
-*/
+    ///Completar la page_table_entry para que referencie a la dirección física///
+    new_page_table_entry[PTE_OFF].us = 1;
+    new_page_table_entry[PTE_OFF].rw = 1;
+    new_page_table_entry[PTE_OFF].p = 1;
+    ///la dirección física es multiplo de 4 k y en el descriptor va el numero sin los 3 ceros///
+    new_page_table_entry[PTE_OFF].base = (phy >> 12);
+    ///invalidar cache de traduciones///
+    tlbflush();
+    */
 }
 
 uint32_t mmu_unmapPage(uint32_t virtual, uint32_t cr3) {
+    ///Indice del page directory & Indice del page table///
+    //uint32_t PDE_OFF = virtual >> 22;//off_set_directory
+    //uint32_t PTE_OFF = (virtual << 10) >> 22;//off_set_table
+    ///dirección base del page directory///
+    //page_dir_entry* pd = (page_dir_entry*) ((cr3 >> 12) << 12);
+    //page_dir_entry pd_ent = pd[PDE_OFF];//selector de pagina
+    //pd_ent[PTE_OFF].p = 0;
     return 0;
 }
 
 uint32_t mmu_initKernelDir() {
- /*   page_dir_entry *pd = 0x27000;
 
-    pd[0].p = 1;
-    pd[0].p = 1;
-    pd[0].p = 1;
-    pd[0].p = 1;
-    pd[0].p = 1;
-    pd[0].p = 1;
-    pd[0].p = 1;
-    pd[0].p = 1;
-    pd[0].p = 1;
-    pd[0].p = 1;
-    pd[0].tabla = (0x28000 >> 12);
-
-    // marco con un for las demás entradas como no presentes for(){pd[i] = 0} (igual que arriba)
-
-    page_table_entry *pt = (pd[0].tabla<<12);
-
+    //cr3 = 0x28000 << (32-20)//
+    /*inicializar el directorio de páginas en la dirección 0x27000*/
+    page_dir_entry *pd = (page_dir_entry*) 0x27000;
+    //page_table_entry *pt = (page_table_entry*) (pd[0].base<<12);
+    page_table_entry *pt = (page_table_entry*) 0x28000;
     
-    for(int i = 0; i < count; i++)
+    for(int i = 0; i < Directory_size; i++)
     {
-        pt[i].p = 1;
-        pt[i].p = 1;
-        pt[i].p = 1;
-        pt[i].p = 1;
-        pt[i].p = 1;
-        pt[i].p = 1;
-        pt[i].p = 1;
-        pt[i].p = 1;
-        pt[i].p = 1;
-        pt[i].p = 1;
-        pt[i].base = i; // va con algún shifteo?
+        pd[i] = (page_dir_entry){
+            (uint8_t) 0x0,/*[0] = P(presente)*/
+            (uint8_t) 0x0,/*[1] = (R/W)(0 Read Only | 1 puede ser escrita)*/
+            (uint8_t) 0x0,/*[2] = (U/S)(0 es supervisor | 1 es usuario. En general 0->DLP=00 y 1->DLP=resto)*/
+            (uint8_t) 0x00,/*[3] = PWT*/
+            (uint8_t) 0x00,/*[4] = PCD*/
+            (uint8_t) 0x00,/*[5] = (A)(Cada vez que la pagina es accedida este bit se setea)*/
+            (uint8_t) 0x00,/*[6] = (D)(El SO la inicializa en 0, y se setea automaticamente cuando
+  se escribe la página)*/
+            (uint8_t) 0x00,/*[7] = (PS)(Si es 0 decribe una tabla de paginas de 4KB, y si es 1  4MB)*/
+            (uint8_t) 0x00,/*[8] = (G)(Tiene efecto la activacion de lafuncionalidad Global, 
+  que otorga ese caracter a la traduccion de esa ṕagina almacenada en la TLB. 
+  La entrada no se flushea cuando se recarga el registro CR3)*/
+            (uint8_t) 0x00,/*[11..9] = (DLP)privilege-Level*/
+            (uint32_t) 0x0000/*[31..12] = Dirección base de la página*/
+        };
     }
-    
-*/
+    pd[0].p = 0x1;/*[0] = P(presente)*/
+    pd[0].us = 0x0;
+    pd[0].rw = 0x1;/*[1] = (0 Read Only | 1 puede ser escrita)*/
+    pd[0].base = (0x28000 >> 12);/*[31..12] = Dirección base de la page_table*/
 
+    //0x00000000 a 0x003FFFFF son exactamente 1024 paginas
+    for(int i = 0;i<1024; i++)
+    {
+        //base de la pagina, base de la page_directory,base de la pagina,lvlRW1,lvlUS1
+        ///Indice del page directory & Indice del page table///
+        //uint32_t page = mmu_nextFreeKernelPage();
+        uint32_t INDEX_PTE = i;//se omiten los 12 bits(0's), por que todas las paginas son de 4kb
+        page_table_entry* new_pt = (page_table_entry*) mmu_nextFreeKernelPage();
+        new_pt[INDEX_PTE].p = 0x1;
+        new_pt[INDEX_PTE].rw = 0x1;
+        new_pt[INDEX_PTE].us = 0x0;
+        new_pt[INDEX_PTE].pcd = 0x0;
+        new_pt[INDEX_PTE].a = 0x0; // no fue accedida
+        new_pt[INDEX_PTE].d = 0x0; // no esta dirty
+        new_pt[INDEX_PTE].pat = 0x0; //no quiero PAT
+        new_pt[INDEX_PTE].g = 0x0; //no es global
+        new_pt[INDEX_PTE].dpl = 0x3; //no es global
+        pt[INDEX_PTE].base = (i*0x1000) >> 12; //se omiten los 12 bits(0's), por que todas las paginas son de 4kb
+        tlbflush();
+    }
     return 0;
 }
 
