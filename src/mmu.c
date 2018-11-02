@@ -12,9 +12,11 @@ uint8_t PERM_USER = 1;
 uint8_t PERM_WRITE = 1;
 uint32_t Table_size = 0x0400000;
 uint32_t Directory_size = 1024;
-uint32_t next_page_free = 0;
+uint32_t next_page_free;
 uint32_t cr3;
 void mmu_init() {
+    next_page_free = 0;
+
     //despues de lograr activar paginascion(ejercicio 5)
     //Manejo de memoria para manejar area libre de kernel(0x100000 a 0x3FFFFF)
     //Manejo de memoria para manejar area libre de tareas(0x400000 a 0x7FFFFF)
@@ -33,9 +35,10 @@ uint32_t mmu_nextFreeKernelPage() {
 }
 
 uint32_t mmu_nextFreeTaskPage() {
-    uint32_t page_free_task = next_page_free_task;
+  /*  uint32_t page_free_task = next_page_free_task;
     next_page_free_task += 0x1000;
-    return next_page_free_task;
+    return next_page_free_task;*/
+    return 0;
 }
 
 void setPageTable(page_table_entry* new_page_table_entry, uint32_t attrs){
@@ -102,16 +105,16 @@ uint32_t mmu_initKernelDir() {
             (uint8_t) 0x0,/*[0] = P(presente)*/
             (uint8_t) 0x0,/*[1] = (R/W)(0 Read Only | 1 puede ser escrita)*/
             (uint8_t) 0x0,/*[2] = (U/S)(0 es supervisor | 1 es usuario. En general 0->DLP=00 y 1->DLP=resto)*/
-            (uint8_t) 0x00,/*[3] = PWT*/
-            (uint8_t) 0x00,/*[4] = PCD*/
-            (uint8_t) 0x00,/*[5] = (A)(Cada vez que la pagina es accedida este bit se setea)*/
-            (uint8_t) 0x00,/*[6] = (D)(El SO la inicializa en 0, y se setea automaticamente cuando
+            (uint8_t) 0x0,/*[3] = PWT*/
+            (uint8_t) 0x0,/*[4] = PCD*/
+            (uint8_t) 0x0,/*[5] = (A)(Cada vez que la pagina es accedida este bit se setea)*/
+            (uint8_t) 0x0,/*[6] = (D)(El SO la inicializa en 0, y se setea automaticamente cuando
   se escribe la página)*/
-            (uint8_t) 0x00,/*[7] = (PS)(Si es 0 decribe una tabla de paginas de 4KB, y si es 1  4MB)*/
-            (uint8_t) 0x00,/*[8] = (G)(Tiene efecto la activacion de lafuncionalidad Global, 
+            (uint8_t) 0x0,/*[7] = (PS)(Si es 0 decribe una tabla de paginas de 4KB, y si es 1  4MB)*/
+            (uint8_t) 0x0,/*[8] = (G)(Tiene efecto la activacion de lafuncionalidad Global, 
   que otorga ese caracter a la traduccion de esa ṕagina almacenada en la TLB. 
   La entrada no se flushea cuando se recarga el registro CR3)*/
-            (uint8_t) 0x00,/*[11..9] = (DLP)privilege-Level*/
+            (uint8_t) 0x0,/*[11..9] = (DLP)privilege-Level*/
             (uint32_t) 0x0000/*[31..12] = Dirección base de la página*/
         };
     }
@@ -119,7 +122,7 @@ uint32_t mmu_initKernelDir() {
     pd[0].us = 0x0;
     pd[0].rw = 0x1;/*[1] = (0 Read Only | 1 puede ser escrita)*/
     pd[0].base = (0x28000 >> 12);/*[31..12] = Dirección base de la page_table*/
-
+    
     //0x00000000 a 0x003FFFFF son exactamente 1024 paginas
     for(int i = 0;i<1024; i++)
     {
@@ -127,19 +130,20 @@ uint32_t mmu_initKernelDir() {
         ///Indice del page directory & Indice del page table///
         //uint32_t page = mmu_nextFreeKernelPage();
         uint32_t INDEX_PTE = i;//se omiten los 12 bits(0's), por que todas las paginas son de 4kb
-        page_table_entry* new_pt = (page_table_entry*) mmu_nextFreeKernelPage();
-        new_pt[INDEX_PTE].p = 0x1;
-        new_pt[INDEX_PTE].rw = 0x1;
-        new_pt[INDEX_PTE].us = 0x0;
-        new_pt[INDEX_PTE].pcd = 0x0;
-        new_pt[INDEX_PTE].a = 0x0; // no fue accedida
-        new_pt[INDEX_PTE].d = 0x0; // no esta dirty
-        new_pt[INDEX_PTE].pat = 0x0; //no quiero PAT
-        new_pt[INDEX_PTE].g = 0x0; //no es global
-        new_pt[INDEX_PTE].dpl = 0x3; //no es global
-        pt[INDEX_PTE].base = (i*0x1000) >> 12; //se omiten los 12 bits(0's), por que todas las paginas son de 4kb
+
+        pt[INDEX_PTE].p = 0x1;
+        pt[INDEX_PTE].rw = 0x1;
+        pt[INDEX_PTE].us = 0x0;
+        pt[INDEX_PTE].pcd = 0x0;
+        pt[INDEX_PTE].a = 0x0; // no fue accedida
+        pt[INDEX_PTE].d = 0x0; // no esta dirty
+        pt[INDEX_PTE].pat = 0x0; //no quiero PAT
+        pt[INDEX_PTE].g = 0x0; //no es global
+        pt[INDEX_PTE].dpl = 0x3; //no es global
+        pt[INDEX_PTE].base = i; //se omiten los 12 bits(0's), por que todas las paginas son de 4kb
         tlbflush();
     }
+    next_page_free = next_page_free + (0x1000*1024);
     return 0;
 }
 

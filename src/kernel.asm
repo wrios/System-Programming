@@ -99,18 +99,19 @@ MP:
     call mmu_initKernelDir    
     
     ; Cargar directorio de paginas
-    ;call mmu_init
-    mov eax, 0x27000000; page_directory
+    call mmu_init
+
+    mov eax, 0x00027000; page_directory
     ;shl eax, 12
-    
+
     mov cr3, eax
     ; Habilitar paginacion
     mov eax, cr0
-    
     or eax, 0x80000000 ;habilito Unidad de paginación
     xchg bx, bx
     mov cr0, eax
     ; Inicializar tss
+    xchg bx, bx
     
     ; Inicializar tss de la tarea Idle
 
