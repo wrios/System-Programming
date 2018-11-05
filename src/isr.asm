@@ -312,3 +312,25 @@ nextClock:
                 print_text_pm ebx, 1, 0x0f, 49, 79
                 popad
         ret
+
+global copyHomework
+copyHomework:
+        ;copyHomework(*p1 , *p2 , int size (cantidad de bytes a copiar))
+        ;(pop 1 = *p1)
+        ;(pop 2 = *p2)
+        ;(pop 3 = int size)
+        pop eax
+        pop ebx
+        pop ecx
+        pushad
+        
+.ciclo:        
+        cmp ecx, 0
+        je .fincopyHomework
+        dec ecx
+        mov dx, [eax]
+        mov [ebx], dx
+        jmp .ciclo
+.fincopyHomework:
+        popad
+        iret

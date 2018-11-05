@@ -123,9 +123,13 @@ MP:
     ; Cargar IDT
     lidt [IDT_DESC]
     ; Configurar controlador de interrupciones
-    ; Cargar tarea inicial
     call pic_reset 
     call pic_enable
+    ; Cargar tarea inicial
+    ;mov edi, 
+    ;mov esi, [GDT_DESC]
+    ;add esi, (8<< 4); accediendo a la tarea IDLE dentro de la gdt
+
     ;pic_disable
     
     ;despues de remapear el PIC y habilitarlo, tenemos que la interrupción

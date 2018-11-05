@@ -39,6 +39,30 @@
 #define GDT_ENTRY_CODES_USER             24
 #define GDT_ENTRY_DATAS_USER             25
 #define GDT_ENTRY_VIDEO_KERNEL           26
+#define GDT_ENTRY_TASK_INIT              27
+#define GDT_ENTRY_TASK_IDLE              28
+
+#define GDT_ENTRY_TASK_A0                1
+#define GDT_ENTRY_TASK_A1                2
+#define GDT_ENTRY_TASK_A2                3
+#define GDT_ENTRY_TASK_A3                4
+#define GDT_ENTRY_TASK_A4                5
+#define GDT_ENTRY_TASK_A5                6
+#define GDT_ENTRY_TASK_A6                7
+#define GDT_ENTRY_TASK_A7                8
+#define GDT_ENTRY_TASK_A8                9
+#define GDT_ENTRY_TASK_A9                10
+
+#define GDT_ENTRY_TASK_B0                11
+#define GDT_ENTRY_TASK_B1                12
+#define GDT_ENTRY_TASK_B2                13
+#define GDT_ENTRY_TASK_B3                14
+#define GDT_ENTRY_TASK_B4                15
+#define GDT_ENTRY_TASK_B5                16
+#define GDT_ENTRY_TASK_B6                17
+#define GDT_ENTRY_TASK_B7                18
+#define GDT_ENTRY_TASK_B8                19
+#define GDT_ENTRY_TASK_B9                20
 
 /* Offsets en la gdt */
 /* -------------------------------------------------------------------------- */

@@ -16,7 +16,7 @@
 
 uint32_t getCR3();
 
-void mmu_init();/*llama a mmu_initKernelDir() ?*/
+void mmu_init();
 
 uint32_t mmu_nextFreeKernelPage();
 
@@ -26,7 +26,9 @@ void mmu_mapPage(uint32_t virtual, uint32_t cr3, uint32_t phy, uint32_t attrs);
 
 uint32_t mmu_unmapPage(uint32_t virtual, uint32_t cr3);
 
-uint32_t mmu_initKernelDir();/*inicializar cr3 de kernel ?*/
+uint32_t mmu_initKernelDir();
+
+uint32_t mmu_initTaskDir();
 
 typedef struct str_page_dir_entry {
   uint8_t p:1;/*[0] = P(presente)*/
