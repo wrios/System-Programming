@@ -64,6 +64,8 @@
 #define GDT_ENTRY_TASK_B8                19
 #define GDT_ENTRY_TASK_B9                20
 
+#define TSS_MAX_AMOUNT_TASKS             22
+
 /* Offsets en la gdt */
 /* -------------------------------------------------------------------------- */
 #define GDT_OFF_NULL_DESC           (GDT_IDX_NULL_DESC << 3)

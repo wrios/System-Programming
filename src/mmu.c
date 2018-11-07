@@ -89,16 +89,16 @@ void mmu_mapPage(uint32_t virtual, uint32_t cr3, uint32_t phy, uint32_t attrs) {
 
 uint32_t mmu_unmapPage(uint32_t virtual, uint32_t cr3) {
     ///Indice del page directory & Indice del page table///
-    /*
+    
     uint32_t PDE_OFF = virtual >> 22;//off_set_directory
     uint32_t PTE_OFF = (virtual << 10) >> 22;//off_set_table
     ///dirección base de la page directory///
     page_dir_entry* pd = (page_dir_entry*) ((cr3 >> 12) << 12);//selector de tabla(12 ultimos)
     if (pd[PDE_OFF].p == 1) {
-        page_table_entry* pt_ent = (page_table_entry*) (( ((uint32_t) pd[PDE_OFF]) >>12) <<12);
+        page_table_entry* pt_ent = (page_table_entry*) ((pd[PDE_OFF].base) << 12);
         pt_ent[PTE_OFF].p = 0;
     }
-    */
+    
     return 0;
 }
 
@@ -137,7 +137,7 @@ uint32_t mmu_initTaskDir(uint32_t dir_task_kernel, uint32_t dir_task_zona_free_t
     pd[0].base = (dir_virtual_table >> 12);/*[31..12] = Dirección base de la page_table*/
     
     //0x00000000 a 0x003FFFFF son exactamente 1024 paginas
-    for(int i = dir_fisica; i<1024; i++)//1024 = 0x400(inicio del mappeo del area libre de tareas) 
+    for(int i = 0; i<1024; i++)//1024 = 0x400(inicio del mappeo del area libre de tareas) 
     {
         //base de la pagina, base de la page_directory,base de la pagina,lvlRW1,lvlUS1
         ///Indice del page directory & Indice del page table///
@@ -156,7 +156,15 @@ uint32_t mmu_initTaskDir(uint32_t dir_task_kernel, uint32_t dir_task_zona_free_t
         pt[INDEX_PTE].base = i; //se omiten los 12 bits(0's), por que todas las paginas son de 4kb
         tlbflush();
     }
-    copyHomework(dir_task_kernel, dir_task_zona_free_task,1024);
+
+    uint32_t virt = mmu_nextFreeTaskPage_virtual();
+    uint32_t fisi = mmu_nextFreeTaskPage_fisica();
+    mmu_mapPage(virt, cr3, fisi, atr)
+
+
+    //mappear memoria para que el kernel copie el código en el mismo lugar    
+
+    copyHomework(dir_task_kernel, dir_task_zona_free_task, 8192);
     return 0;
 }
 
