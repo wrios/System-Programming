@@ -15,11 +15,10 @@ tss tss_idle;
 tss tss_array[TSS_MAX_AMOUNT_TASKS];
 
 
-
-tss_init_gdt(uint32_t i, uint32_t cr3){
+// inicializar tarea para un jugador, se llama en la función tss_inicializar
+void tss_init_gdt(uint32_t i, uint32_t cr3){
 
   mmu_initTaskDir();
-
 
   uint32_t pag_1_vir = mmu_nextFreeTaskPage_virtual();
   uint32_t pag_2_vir = mmu_nextFreeTaskPage_virtual();
@@ -43,7 +42,8 @@ tss_init_gdt(uint32_t i, uint32_t cr3){
   gdt[i].limit_16_19 = 0x0;
 }
 
-void tss_idle_initial(uint32_t cr3) {//La rutina debe solicitar dos paginas de area libre de tareas 
+void tss_idle_initial(uint32_t cr3) {
+//La rutina debe solicitar dos paginas de area libre de tareas 
 //donde copiar el código de la tarea y mapear dicha página
 //a partir de la dirección virtual 0x08000000(128MB).
 //Escribir una rutina (mmu initTaskDir) encargada de inicializar un directorio de páginas
@@ -141,8 +141,8 @@ void tss_idle_initial(uint32_t cr3) {//La rutina debe solicitar dos paginas de a
 
 }
 
-tss_inicializar(uint32_t jugador, uint32_t cr3){
-
+void tss_inicializar(uint32_t jugador, uint32_t cr3){
+/*
   // A = 1
   if (jugador){
     for(uint32_t i = 1; i < 11 ; i++){
@@ -171,7 +171,7 @@ tss_inicializar(uint32_t jugador, uint32_t cr3){
       }
     }
 
-  }
+  }*/
 
 }
 

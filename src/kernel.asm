@@ -22,6 +22,7 @@ extern _isr33
 
 extern mmu_init
 extern mmu_initKernelDir
+extern mmu_initTaskDir
 
 ;; Saltear seccion de datos
 jmp start
@@ -96,6 +97,7 @@ MP:
     ; Inicializar el manejador de memoria
     ;call mmu_init
     ; Inicializar el directorio de paginas
+    xchg bx, bx    
     call mmu_initKernelDir    
     
     ; Cargar directorio de paginas
@@ -108,10 +110,8 @@ MP:
     ; Habilitar paginacion
     mov eax, cr0
     or eax, 0x80000000 ;habilito Unidad de paginación
-    xchg bx, bx
     mov cr0, eax
     ; Inicializar tss
-    xchg bx, bx
     
     ; Inicializar tss de la tarea Idle
 
@@ -126,6 +126,7 @@ MP:
     call pic_reset 
     call pic_enable
     ; Cargar tarea inicial
+    call tss_init_gdt
     ;mov edi, 
     ;mov esi, [GDT_DESC]
     ;add esi, (8<< 4); accediendo a la tarea IDLE dentro de la gdt

@@ -328,8 +328,9 @@ copyHomework:
         cmp ecx, 0
         je .fincopyHomework
         dec ecx
-        mov dx, [eax]
-        mov [ebx], dx
+        mov dl, [eax]
+        xchg bx, bx
+        mov [ebx], dl
         jmp .ciclo
 .fincopyHomework:
         popad

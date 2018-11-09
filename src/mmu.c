@@ -7,6 +7,7 @@
 
 #include "mmu.h"
 extern void copyHomework(int task_kernel, int task_area_libre_tarea, int a);
+
 uint32_t next_page_free_task_fisica;
 uint32_t next_page_free_task_virtual;
 uint32_t next_page_free_kernel;
@@ -15,7 +16,9 @@ uint8_t PERM_WRITE = 1;
 uint32_t Table_size = 0x0400000;
 uint32_t Directory_size = 1024;
 uint32_t next_page_free;
-uint32_t cr3;
+uint32_t cr3 = 0x27000;
+
+
 void mmu_init() {
     next_page_free_kernel = 0x100000;
     //pedir dos paginas de libres tareas para directorio y tabla de tareas
@@ -57,7 +60,6 @@ void setPageTable(page_table_entry* new_page_table_entry, uint32_t attrs){
 }
 
 void mmu_mapPage(uint32_t virtual, uint32_t cr3, uint32_t phy, uint32_t attrs) {
-    //breakpoint();
    ///Indice del page directory & Indice del page table///
     uint32_t PDE_OFF = virtual >> 22;//off_set_directory
     uint32_t PTE_OFF = (virtual << 10) >> 22;//off_set_table
@@ -102,16 +104,21 @@ uint32_t mmu_unmapPage(uint32_t virtual, uint32_t cr3) {
     return 0;
 }
 
-uint32_t mmu_initTaskDir(uint32_t dir_task_kernel, uint32_t dir_task_zona_free_task){
+uint32_t mmu_initTaskDir(char jugador, uint32_t cr3){
     //las direcciones virtuales van en la page directory
     //las direcciones fisicas van la page table
     /*inicializar dirección virtual de directorio y tabla de la tarea*/
+
+    // mapeamos los primeros 4mb del kernel para acceder a las interrupciones
+    mmu_mappear4mbKernel();
+
     uint32_t dir_virtual_directory = mmu_nextFreeTaskPage_virtual();
     uint32_t dir_virtual_table = mmu_nextFreeTaskPage_virtual();
+    mmu_nextFreeTaskPage_fisica();
+    mmu_nextFreeTaskPage_fisica();
     page_dir_entry *pd = (page_dir_entry*) dir_virtual_directory;
     page_table_entry *pt = (page_table_entry*) dir_virtual_table;
     /*inicializar dirección fisica de la copia de la tarea*/
-    uint32_t dir_fisica = mmu_nextFreeTaskPage_fisica();
     for(int i = 0; i < Directory_size; i++)
     {
         pd[i] = (page_dir_entry){
@@ -130,12 +137,14 @@ uint32_t mmu_initTaskDir(uint32_t dir_task_kernel, uint32_t dir_task_zona_free_t
             (uint8_t) 0x0,/*[11..9] = (DLP)privilege-Level*/
             (uint32_t) 0x0000/*[31..12] = Dirección base de la página*/
         };
+        tlbflush();
     }
     pd[0].p = 0x1;/*[0] = P(presente)*/
     pd[0].us = 0x0;
     pd[0].rw = 0x1;/*[1] = (0 Read Only | 1 puede ser escrita)*/
     pd[0].base = (dir_virtual_table >> 12);/*[31..12] = Dirección base de la page_table*/
-    
+
+
     //0x00000000 a 0x003FFFFF son exactamente 1024 paginas
     for(int i = 0; i<1024; i++)//1024 = 0x400(inicio del mappeo del area libre de tareas) 
     {
@@ -157,20 +166,28 @@ uint32_t mmu_initTaskDir(uint32_t dir_task_kernel, uint32_t dir_task_zona_free_t
         tlbflush();
     }
 
-    uint32_t virt = mmu_nextFreeTaskPage_virtual();
-    uint32_t fisi = mmu_nextFreeTaskPage_fisica();
-    mmu_mapPage(virt, cr3, fisi, atr)
 
 
-    //mappear memoria para que el kernel copie el código en el mismo lugar    
+    uint32_t virt;
+    uint32_t fisi = virt = mmu_nextFreeTaskPage_fisica();
+    mmu_nextFreeTaskPage_fisica();
+    uint32_t atr = 0x3; // U/S = 0, R/W = 1, P = 1
 
-    copyHomework(dir_task_kernel, dir_task_zona_free_task, 8192);
+    mmu_mapPage(virt, cr3, fisi, atr);
+
+
+    //mappear memoria para que el kernel copie el código en el mismo lugar
+    // Hardcodeado para testear con el jugador siempre A
+    uint32_t area_tarea_A = 0x10000;
+
+    copyHomework(area_tarea_A, virt, 8192);
+
+
     return 0;
 }
 
-uint32_t mmu_initKernelDir() {
-
-    //cr3 = 0x28000 << (32-20)//
+uint32_t mmu_mappear4mbKernel() {
+ //cr3 = 0x28000 << (32-20)//
     /*inicializar el directorio de páginas en la dirección 0x27000*/
     page_dir_entry *pd = (page_dir_entry*) 0x27000;
     //page_table_entry *pt = (page_table_entry*) (pd[0].base<<12);
@@ -222,6 +239,10 @@ uint32_t mmu_initKernelDir() {
     }
     //next_page_free = next_page_free + (0x1000*1024);
     return 0;
+}
+
+uint32_t mmu_initKernelDir() {
+    mmu_mappear4mbKernel();
 }
 
 
