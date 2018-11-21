@@ -16,6 +16,8 @@
 
 uint32_t getCR3();
 
+void copyHomework(uint32_t kernel, uint32_t libre_tareas);
+
 void mmu_init();
 
 uint32_t mmu_nextFreeKernelPage();
@@ -30,9 +32,11 @@ uint32_t mmu_nextFreeTaskPage_fisica();
 
 uint32_t mmu_nextFreeTaskPage_virtual();
 
-uint32_t mmu_initKernelDir();
+uint32_t mmu_initTaskDir(void* tss_task);
 
-uint32_t mmu_initTaskDir();
+void test_mmu_initTaskDir();
+
+void mmu_test_task_dir();
 
 typedef struct str_page_dir_entry {
   uint8_t p:1;/*[0] = P(presente)*/

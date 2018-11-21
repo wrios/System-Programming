@@ -8,6 +8,9 @@
 
 BITS 32
 
+global sched_task_offset
+global sched_task_selector
+
 sched_task_offset:     dd 0x00
 sched_task_selector:   dw 0x00
 
@@ -180,6 +183,7 @@ _isr32:
         pushad
         call pic_finish1
         call nextClock
+        
         ;xchg bx, bx
         popad
         iret
@@ -313,8 +317,8 @@ nextClock:
                 popad
         ret
 
-global copyHomework
-copyHomework:
+global copyHomework2
+copyHomework2:
         ;copyHomework(*p1 , *p2 , int size (cantidad de bytes a copiar))
         ;(pop 1 = *p1)
         ;(pop 2 = *p2)

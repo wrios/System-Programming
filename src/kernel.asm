@@ -5,7 +5,12 @@
 
 %include "print.mac"
 
+extern sched_task_offset
+extern sched_task_selector
+
 global start
+
+extern create_tss_descriptores
 
 extern GDT_DESC
 extern IDT_DESC
@@ -20,9 +25,13 @@ extern pic_disable
 extern _isr32
 extern _isr33
 
+extern mmu_mappear4mbKernel
 extern mmu_init
 extern mmu_initKernelDir
 extern mmu_initTaskDir
+extern test_mmu_initTaskDir
+
+extern tss_idle_initial
 
 ;; Saltear seccion de datos
 jmp start
@@ -40,7 +49,7 @@ start_pm_len equ    $ - start_pm_msg
 ;; Seccion de código.
 ;; -------------------------------------------------------------------------- ;;
 
-   ; xchg bx, bx
+   ; ;xchg bx, bx
 
 
 ;; Punto de entrada del kernel.
@@ -90,18 +99,19 @@ MP:
     mov esp, 0x27000
     ; Imprimir mensaje de bienvenida
     call pintar_pantalla    
-    
+    call create_tss_descriptores
     ; Inicializar pantalla
     
    ; mov ax, 0xD0 ; Indice de nuestro segmento de video para el kernel 26*8 (bytes)
     ; Inicializar el manejador de memoria
     ;call mmu_init
     ; Inicializar el directorio de paginas
-    xchg bx, bx    
-    call mmu_initKernelDir    
+    ;xchg bx, bx    
+    call mmu_init
+    
     
     ; Cargar directorio de paginas
-    call mmu_init
+    call mmu_mappear4mbKernel
 
     mov eax, 0x00027000; page_directory
     ;shl eax, 12
@@ -114,7 +124,7 @@ MP:
     ; Inicializar tss
     
     ; Inicializar tss de la tarea Idle
-
+    call tss_idle_initial
     ; Inicializar el scheduler
 
 
@@ -126,11 +136,11 @@ MP:
     call pic_reset 
     call pic_enable
     ; Cargar tarea inicial
-    call tss_init_gdt
+    ;call tss_init_gdt
     ;mov edi, 
     ;mov esi, [GDT_DESC]
     ;add esi, (8<< 4); accediendo a la tarea IDLE dentro de la gdt
-
+    ;call test_mmu_initTaskDir
     ;pic_disable
     
     ;despues de remapear el PIC y habilitarlo, tenemos que la interrupción
@@ -143,7 +153,17 @@ MP:
     ;IRQ1 para teclado
 
     ; Saltar a la primera tarea: Idle
+    ;cargar indice de la tarea inicial
+    xchg bx, bx
+    mov ax, 27<<3;[0..1]RPL = 00, [2] = 0(GDT), 11001 = 1B
+    ltr ax
+    xchg bx, bx
+    ;jmp a la tarea IDLE
     
+    mov ax, 28<<3;[0..1]RPL = 0, [2] = 0(GDT), 11100 = 1C
+    mov [sched_task_selector], ax
+    jmp [sched_task_offset]
+        
     ;Para pasar a paginación, hacer un Aling 4096
     ;Activar paginación
     ;Armar un directorio de paginas y tablas de paginas

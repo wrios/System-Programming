@@ -7,7 +7,7 @@ ORG 0x00014000 ; TASK_IDLE_CODE
 BITS 32
 
 %include "print.mac"
-
+global idle
 idle:
     .loop:
         inc dword [number]

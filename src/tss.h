@@ -14,6 +14,10 @@
 #include "gdt.h"
 #include "mmu.h"
 
+
+void tss_init_gdt(uint32_t i, uint32_t cr3);
+void tss_idle_initial();
+
 typedef struct str_tss {
     uint16_t  ptl;
     uint16_t  unused0;
@@ -55,8 +59,31 @@ typedef struct str_tss {
     uint16_t  iomap;
 } __attribute__((__packed__, aligned (8))) tss;
 
+void tss_inicializar(tss* tss_task, uint32_t jugador);
+void tss_set_attr(tss* tss_task, uint32_t pila0);
 extern tss tss_initial;
 extern tss tss_idle;
+extern tss tss_A0;
+extern tss tss_A1;
+extern tss tss_A2;
+extern tss tss_A3;
+extern tss tss_A4;
+extern tss tss_A5;
+extern tss tss_A6;
+extern tss tss_A7;
+extern tss tss_A8;
+extern tss tss_A9;
+
+extern tss tss_B0;
+extern tss tss_B1;
+extern tss tss_B2;
+extern tss tss_B3;
+extern tss tss_B4;
+extern tss tss_B5;
+extern tss tss_B6;
+extern tss tss_B7;
+extern tss tss_B8;
+extern tss tss_B9;
 
 void tss_init();
 

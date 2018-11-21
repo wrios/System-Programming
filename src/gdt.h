@@ -10,7 +10,7 @@
 
 #include "stdint.h"
 #include "defines.h"
-
+void create_tss_descriptores();
 typedef struct str_gdt_descriptor {
     uint16_t  gdt_length;
     uint32_t    gdt_addr;
