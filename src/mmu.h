@@ -14,9 +14,12 @@
 #include "tss.h"
 #include "game.h"
 
+uint32_t next_page_free_task_fisica;
+uint32_t next_page_free_kernel;
+
 uint32_t getCR3();
 
-void copyHomework(uint32_t kernel, uint32_t libre_tareas);
+void copyHomework(char* kernel, char* libre_tareas);
 
 void mmu_init();
 
@@ -33,6 +36,8 @@ uint32_t mmu_nextFreeTaskPage_fisica();
 uint32_t mmu_nextFreeTaskPage_virtual();
 
 uint32_t mmu_initTaskDir(void* tss_task);
+
+void test_copyHomework();
 
 void test_mmu_initTaskDir();
 

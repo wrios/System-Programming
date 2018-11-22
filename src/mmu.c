@@ -8,42 +8,43 @@
 #include "mmu.h"
 //extern void copyHomework(int task_kernel, int task_area_libre_tarea, int a);
 
-uint32_t next_page_free_task_fisica;
+
 uint32_t next_page_free_task_virtual = 0x08000000;
-uint32_t next_page_free_kernel;
 uint8_t PERM_USER = 1;
 uint8_t PERM_WRITE = 1;
 uint32_t Table_size = 0x0400000;
 uint32_t Directory_size = 1024;
-uint32_t next_page_free;
-uint32_t cr3 = 0x27000;
+uint32_t cr3_kernel = 0x27000;
 
-void copyHomework(uint32_t kernel2, uint32_t libre_tareas2){
-    int * kernel = (int*) kernel2;
-    int * libre_tareas = (int*) libre_tareas2;
+void copyHomework(char* kernel2, char* libre_tareas2){
+    //char* kernel = (char* ) kernel2;
+    //char* libre_tareas = (char* ) libre_tareas2;
+    breakpoint();
     for(int i = 0; i < 2048; i++)
     {
         //< 8192
-        (*kernel) = (*libre_tareas);
-        kernel = (int*)(kernel + 1);
-        libre_tareas = (int*)(libre_tareas + 1);
+        (*libre_tareas2) = (*kernel2);
+        kernel2 = (char* )(kernel2 + 1);
+        libre_tareas2 = (char* )(libre_tareas2 + 1);
     }
+}
+
+void test_copyHomework(){
+    uint32_t phy = mmu_nextFreeTaskPage_fisica();
+    mmu_mapPage(phy, cr3_kernel, phy, 0x5);
+    phy = phy + 0x1000;
+    mmu_mapPage(phy, cr3_kernel, phy, 0x5);
+    //copyHomework((char *)0x14000,(char *)0x08000000);
+    copyHomework((char *)0x14000,(char *)phy);
 }
 
 void mmu_init() {
     next_page_free_kernel = 0x100000;
-    //pedir dos paginas de libres tareas para directorio y tabla de tareas
     next_page_free_task_fisica = 0x400000;
-    //mappear las dos paginas solicitadas
-    //despues de lograr activar paginascion(ejercicio 5)
-    //Manejo de memoria para manejar area libre de kernel(0x100000 a 0x3FFFFF)
-    //Manejo de memoria para manejar area libre de tareas(0x400000 a 0x7FFFFF)
-    //(sug: dos contadores)
-    //creo que hay que hacer mappeo con identity mapping para are libre de kernel
 }
 
 uint32_t getCR3(){
-    return cr3;
+    return cr3_kernel;
 }
 
 uint32_t mmu_nextFreeKernelPage() {
@@ -121,7 +122,7 @@ uint32_t mmu_initTaskDir(void* tss_task2){//inicializa el directorio de una tare
     pd[0].base = ((uint32_t) pt) >> 12;
     //mapeo con u/s = 1, r/w = 1, p = 1
     mmu_mapPage(0x08000000, tss_task->cr3, page1, 0x5);
-    mmu_mapPage(0x08000000, tss_task->cr3, page2, 0x5);
+    mmu_mapPage(0x08001000, tss_task->cr3, page2, 0x5);
     return 0;
 }
 
