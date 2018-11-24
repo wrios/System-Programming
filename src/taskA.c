@@ -10,7 +10,6 @@
 #include "game.h"
 
 void task() {
-//     breakpoint();
 
 while(1) {
 	for(int i=0;i<50;i++) {

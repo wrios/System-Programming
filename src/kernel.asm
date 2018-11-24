@@ -109,6 +109,7 @@ MP:
     
     call mmu_init
     
+
     
     ; Cargar directorio de paginas
     call mmu_mappear4mbKernel
@@ -126,10 +127,12 @@ MP:
     ; Inicializar tss de la tarea Idle
     
     call create_tss_descriptores
-    ;xchg bx, bx
-    ;call test_copyHomework
-    ;call tss_idle_initial
     
+    ;xchg bx, bx
+    push 0x27000
+    call test_copyHomework
+    call tss_idle_initial
+    ;xchg bx, bx
     ; Inicializar el scheduler
 
 

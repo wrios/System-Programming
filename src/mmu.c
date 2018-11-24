@@ -19,8 +19,7 @@ uint32_t cr3_kernel = 0x27000;
 void copyHomework(char* kernel2, char* libre_tareas2){
     //char* kernel = (char* ) kernel2;
     //char* libre_tareas = (char* ) libre_tareas2;
-    breakpoint();
-    for(int i = 0; i < 2048; i++)
+    for(int i = 0; i < 1024; i++)
     {
         //< 8192
         (*libre_tareas2) = (*kernel2);
@@ -29,13 +28,21 @@ void copyHomework(char* kernel2, char* libre_tareas2){
     }
 }
 
-void test_copyHomework(){
+void test_copyHomework(int cr3_tarea){
     uint32_t phy = mmu_nextFreeTaskPage_fisica();
+    uint32_t phy2 = mmu_nextFreeTaskPage_fisica();
     mmu_mapPage(phy, cr3_kernel, phy, 0x5);
-    phy = phy + 0x1000;
-    mmu_mapPage(phy, cr3_kernel, phy, 0x5);
-    //copyHomework((char *)0x14000,(char *)0x08000000);
-    copyHomework((char *)0x14000,(char *)phy);
+    mmu_mapPage(phy2, cr3_kernel, phy2, 0x5);
+
+    copyHomework((char*) 0x14000,(char*)  phy);
+    copyHomework((char*) 0x15000,(char*)  phy2);
+
+    mmu_unmapPage(phy, cr3_kernel);
+    mmu_unmapPage(phy2, cr3_kernel);
+
+    mmu_mapPage(TASK_CODE, cr3_tarea, phy, 0x5);
+    mmu_mapPage(TASK_CODE+0x1000, cr3_tarea, phy2, 0x5);
+
 }
 
 void mmu_init() {
@@ -78,16 +85,24 @@ void mmu_mapPage(uint32_t virtual, uint32_t cr3, uint32_t phy, uint32_t attrs) {
     page_table_entry* new_page_table_entry;
     ///Hay que chequar que la page table a la que referencia el pd_ent exista///
     if (pd_ent.p == 0){//crear y settear la page_table_entry
+        pd[PDE_OFF].p = 1;
         new_page_table_entry = (page_table_entry*) mmu_nextFreeKernelPage();//new_kernel_page();
         ////la dirección es multiplo de 4k////
-        pd[PDE_OFF].base = ((uint32_t)new_page_table_entry >> 12);
+        pd[PDE_OFF].base = ((uint32_t)new_page_table_entry) >> 12;
+
+
     }else{//si esta presente, alcanza con asignarle la dirección a la que apunta la 
     //page directory[PDE_OFF] para decirle que ese es el lugar donde empieza
         new_page_table_entry = (page_table_entry*) (pd[PDE_OFF].base << 12);
     }
+    pd[PDE_OFF].us = ((attrs << 29)>>31);
+    pd[PDE_OFF].rw = ((attrs << 30)>>31);
+    pd[PDE_OFF].p = ((attrs << 31)>>31);
     ///la dirección física es multiplo de 4 k y en el descriptor va el numero sin los 3 ceros///
-    setPageTable(new_page_table_entry, attrs);
     new_page_table_entry[PTE_OFF].base = (phy >> 12);
+    new_page_table_entry[PTE_OFF].us = ((attrs << 29)>>31);
+    new_page_table_entry[PTE_OFF].rw = ((attrs << 30)>>31);
+    new_page_table_entry[PTE_OFF].p = ((attrs << 31)>>31);
     ///invalidar cache de traduciones///
     tlbflush();
 }
@@ -121,8 +136,18 @@ uint32_t mmu_initTaskDir(void* tss_task2){//inicializa el directorio de una tare
     tss_task->eip = page1;
     pd[0].base = ((uint32_t) pt) >> 12;
     //mapeo con u/s = 1, r/w = 1, p = 1
-    mmu_mapPage(0x08000000, tss_task->cr3, page1, 0x5);
-    mmu_mapPage(0x08001000, tss_task->cr3, page2, 0x5);
+    mmu_mapPage(page1, cr3_kernel, page1, 0x5);
+    mmu_mapPage(page2, cr3_kernel, page2, 0x5);
+
+    copyHomework((char *)0x14000,(char *)page1);
+    copyHomework((char *)0x15000,(char *)page2);
+
+    mmu_unmapPage(page1, cr3_kernel);
+    mmu_unmapPage(page2, cr3_kernel);
+
+    mmu_mapPage(TASK_CODE, tss_task->cr3, page1, 0x5);
+    mmu_mapPage(TASK_CODE+0x1000, tss_task->cr3, page2, 0x5);
+
     return 0;
 }
 
@@ -173,7 +198,7 @@ uint32_t mmu_mappear4mbKernel() {
         pt[INDEX_PTE].d = 0x0; // no esta dirty
         pt[INDEX_PTE].pat = 0x0; //no quiero PAT
         pt[INDEX_PTE].g = 0x0; //no es global
-        pt[INDEX_PTE].dpl = 0x3; //no es global
+        pt[INDEX_PTE].dpl = 0x0; //no es global
         pt[INDEX_PTE].base = i; //se omiten los 12 bits(0's), por que todas las paginas son de 4kb
         tlbflush();
     }

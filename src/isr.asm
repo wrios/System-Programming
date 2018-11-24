@@ -315,7 +315,7 @@ nextClock:
                 add ebx, isrClock
                 print_text_pm ebx, 1, 0x0f, 49, 79
                 popad
-        ret
+        iret
 
 global copyHomework2
 copyHomework2:

@@ -141,7 +141,12 @@ void tss_idle_initial() {
   tss_array[21].eip = 0x00014000;
   tss_array[21].cr3 = 0x27000;//comparte cr3 con el kernel
   tss_array[21].esp0 = 0x27000;//comparte pila0 con el kernel
-  gdt[28].base_0_15 = ((uint32_t)(&tss_array[21]) << 24) >> 24;
+
+  gdt[27].base_0_15 = ((uint32_t)(&tss_array[20]) << 16) >> 16;
+  gdt[27].base_23_16 = ((uint32_t)(&tss_array[20]) << 8) >> 24;
+  gdt[27].base_31_24 = (uint32_t)(&tss_array[20]) >> 24;
+
+  gdt[28].base_0_15 = ((uint32_t)(&tss_array[21]) << 16) >> 16;
   gdt[28].base_23_16 = ((uint32_t)(&tss_array[21]) << 8) >> 24;
   gdt[28].base_31_24 = (uint32_t)(&tss_array[21]) >> 24;
   uint32_t phy = mmu_nextFreeTaskPage_fisica();
@@ -151,7 +156,7 @@ void tss_idle_initial() {
   //mmu_mapPage(0x8001000, tss_array[21].cr3, phy2, attr);
   mmu_mapPage(phy2, tss_array[21].cr3, phy2, attr);
   breakpoint();
-  copyHomework((char* )0x14000, (char* )phy);
+  //copyHomework((char* )0x14000, (char* )phy);
   
 }
 
