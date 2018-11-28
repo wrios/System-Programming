@@ -279,22 +279,57 @@ _isr33:
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
 global _isr71
+extern chequear_vision_C
+extern read_C
+;read
 _isr71:
         pushad
-        ;xchg bx, bx; bkp
-        mov eax, 0x42
+
+        push eax; x
+        push ebx; y
+        call chequear_vision_C
+        cmp eax, 1; si puedo ver esa posicion
+        jne devuelvo_Null
+        call read_C; devuelvo que hay en esa posicion
+        pop ebx
+        pop eax
         popad
+        iret
+devuelvo_Null:
+        pop ebx
+        pop eax
+        popad
+        mov eax, 0
         iret
 
 global _isr73
+;move
+extern move_actualizar_C
 _isr73:
         pushad
+        push ecx; distancia
+        push edx; dir
+        call move_actualizar_C; actualiza estructuras y devuelve lo que se logro mover
+        pop edx
+        pop ecx
         popad
         iret
 
 global _isr76
+;divide
+extern checkear_poder_div_C
+extern copiar_tarea_C
 _isr76:
         pushad
+       
+        call checkear_poder_div_C; mirar espacio y peso
+        cmp eax, 0; si no puedo divirme
+        je menos_uno
+        call copiar_tarea_C
+        jmp fin76
+menos_uno:
+        mov eax, -1
+fin76:
         popad
         iret                
 

@@ -34,13 +34,13 @@
 
 // EMPIEZA EN 22 O 21?
 #define GDT_IDX_NULL_DESC                0
-#define GDT_ENTRY_CODES_KERNEL           22
-#define GDT_ENTRY_DATAS_KERNEL           23
-#define GDT_ENTRY_CODES_USER             24
-#define GDT_ENTRY_DATAS_USER             25
-#define GDT_ENTRY_VIDEO_KERNEL           26
-#define GDT_ENTRY_TASK_INIT              27
-#define GDT_ENTRY_TASK_IDLE              28
+#define GDT_ENTRY_CODES_KERNEL           22//0x16
+#define GDT_ENTRY_DATAS_KERNEL           23//0x17
+#define GDT_ENTRY_CODES_USER             24//0x18
+#define GDT_ENTRY_DATAS_USER             25//0x19
+#define GDT_ENTRY_VIDEO_KERNEL           26//0x1A
+#define GDT_ENTRY_TASK_INIT              27//0x1B
+#define GDT_ENTRY_TASK_IDLE              28//0x1B
 
 #define GDT_ENTRY_TASK_A0                1
 #define GDT_ENTRY_TASK_A1                2

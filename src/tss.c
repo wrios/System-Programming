@@ -149,15 +149,33 @@ void tss_idle_initial() {
   gdt[28].base_0_15 = ((uint32_t)(&tss_array[21]) << 16) >> 16;
   gdt[28].base_23_16 = ((uint32_t)(&tss_array[21]) << 8) >> 24;
   gdt[28].base_31_24 = (uint32_t)(&tss_array[21]) >> 24;
+  
+  /*Iniciar pd, pt para la tarea y copiar codigo y dato*/
   uint32_t phy = mmu_nextFreeTaskPage_fisica();
   mmu_mapPage(phy, tss_array[21].cr3, phy, attr);
   //mmu_mapPage(0x8000000, tss_array[21].cr3, phy, attr);
   uint32_t phy2 = mmu_nextFreeTaskPage_fisica();
   //mmu_mapPage(0x8001000, tss_array[21].cr3, phy2, attr);
   mmu_mapPage(phy2, tss_array[21].cr3, phy2, attr);
-  breakpoint();
-  //copyHomework((char* )0x14000, (char* )phy);
-  
+
+  copyHomework((char*) 0x14000,(char*)  phy);
+  copyHomework((char*) 0x15000,(char*)  phy2);
+
+  mmu_unmapPage(phy, tss_array[21].cr3);
+  mmu_unmapPage(phy2, tss_array[21].cr3);
+
+  mmu_mapPage(TASK_CODE, tss_array[21].cr3, phy, 0x5);
+  mmu_mapPage(TASK_CODE+0x1000, tss_array[21].cr3, phy2, 0x5);
+  tss_array[21].eip = phy;
+
+  /*Iniciar pila0 de la tarea*/
+  uint32_t pila_0 =  mmu_nextFreeKernelPage();
+  mmu_mapPage(TASK_CODE+0x2000, tss_array[21].cr3, phy + 0x2000, 0x5);
+  /*Esta pagina es para pila, entonces la base sera el ultimo byte alcanzable por la pagina
+  y el primer byte es el ultimo*/
+
+  tss_array[21].esp = TASK_CODE + 0x1000 -1;
+  tss_array[21].ebp = TASK_CODE + 0x1000 -1;
 }
 
 void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea

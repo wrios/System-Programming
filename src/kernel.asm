@@ -5,10 +5,12 @@
 
 %include "print.mac"
 
-extern sched_task_offset
-extern sched_task_selector
+
 
 global start
+
+extern sched_task_offset
+extern sched_task_selector
 
 extern create_tss_descriptores
 
