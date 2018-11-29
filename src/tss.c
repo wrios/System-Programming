@@ -96,7 +96,7 @@ void tss_idle_initial() {
       (uint16_t)  0x0, // ptl
       (uint16_t)  0x0, // reserved
       (uint32_t)  0x00027000, //comparte con el kernel (esp0)
-      (uint16_t)  0x0, //ss0 PREGUNTAR QUE ONDA ESTO
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), //ss0 PREGUNTAR QUE ONDA ESTO
       (uint16_t)  0x0, // reserved
       (uint32_t)  0x0, // esp1
       (uint16_t)  0x0,  //  ss1,
@@ -111,21 +111,21 @@ void tss_idle_initial() {
       (uint32_t)  0x0, // ecx
       (uint32_t)  0x0, // edx
       (uint32_t)  0x0, // ebx
-      (uint32_t)  0x00000,//pedir paginas para C y D(esp3)
-      (uint32_t)  0x00000,//pedir paginas para C y D(ebp3)
+      (uint32_t)  0x00000,//esp pedir paginas para C y D(esp3)
+      (uint32_t)  0x00000,// ebp pedir paginas para C y D(ebp3)
       (uint32_t)  0x0, // esi
       (uint32_t)  0x0, // edi
-      (uint16_t)  0x17, // es
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // es
       (uint16_t)  0x0, // unused
-      (uint16_t)  0x16, // cs
+      (uint16_t)  (GDT_ENTRY_CODES_KERNEL<<3), // cs
       (uint16_t)  0x0, // unused
-      (uint16_t)  0x17, // segmento pila del kernel RE PREGUNTAR
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // ss segmento pila del kernel RE PREGUNTAR
       (uint16_t)  0x0, // unused
-      (uint16_t)  0x17, // ds kernel
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // ds kernel
       (uint16_t)  0x0, //unused
-      (uint16_t)  0x1A, // fs kernel - PREGUNTAR
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // fs kernel - PREGUNTAR
       (uint16_t)  0x0, // unused
-      (uint16_t)  0x17, // gs data kernel
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // gs data kernel
       (uint16_t)  0x0, //unused
       (uint16_t)  0x0, //ldt - PREGUNTAR
       (uint16_t)  0x0, //unused

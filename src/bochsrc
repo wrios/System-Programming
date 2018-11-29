@@ -388,8 +388,9 @@ floppy_bootsig_check: disabled=0
 #   log: ./bochs.out
 #   log: /dev/tty
 #=======================================================================
-log: /dev/null
-#log: bochs.log
+#log: /dev/null
+
+log: bochs.log
 
 #=======================================================================
 # LOGPREFIX:
@@ -432,7 +433,7 @@ log: /dev/null
 panic: action=ask
 error: action=report
 info: action=report
-debug: action=ignore
+debug: action=report
 #pass: action=fatal
 
 #=======================================================================

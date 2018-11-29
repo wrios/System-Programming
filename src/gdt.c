@@ -115,23 +115,23 @@ void create_tss_descriptores(){
     for(uint32_t i = 1; i < 21; i++)
     {
         gdt[i] = (gdt_entry) {
-            (uint16_t)    0x67,         // limit[0:15] 
-            (uint16_t)    0x0000,         // base[0:15]  
-            (uint8_t)     0x00,           // base[23:16] 
+            (uint16_t)    0x67,         // limit[0:15]
+            (uint16_t)    0x0000,         // base[0:15]
+            (uint8_t)     0x00,           // base[23:16]
             //type 10B1(B es el bit de Busy, inicialmente en 0)
             (uint8_t)     0x09,           // type
-            (uint8_t)     0x00,           // s           
-            (uint8_t)     0x00,           // dpl         
-            (uint8_t)     0x01,           // p           
+            (uint8_t)     0x00,           // s
+            (uint8_t)     0x00,           // dp
+            (uint8_t)     0x01,           // p
             (uint8_t)     0x00,           // limit[16:19]
-            (uint8_t)     0x00,           // avl         
-            (uint8_t)     0x00,           // l           
-            (uint8_t)     0x00,           // db          
-            (uint8_t)     0x00,           // g           
-            (uint8_t)     0x00,           // base[31:24]  
+            (uint8_t)     0x00,           // avl
+            (uint8_t)     0x00,           // l
+            (uint8_t)     0x00,           // db
+            (uint8_t)     0x00,           // g
+            (uint8_t)     0x00,           // base[31:24]
         };
     };
-    gdt[27] = (gdt_entry) {
+    gdt[GDT_ENTRY_TASK_INIT] = (gdt_entry) {
         (uint16_t)    0x67,         // limit[0:15] 
         (uint16_t)    0x0000,         // base[0:15]  
         (uint8_t)     0x00,           // base[23:16] 
@@ -147,7 +147,7 @@ void create_tss_descriptores(){
         (uint8_t)     0x00,           // g           
         (uint8_t)     0x00,           // base[31:24]  
     };
-    gdt[28] = (gdt_entry) {
+    gdt[GDT_ENTRY_TASK_IDLE] = (gdt_entry) {
         (uint16_t)    0x67,         // limit[0:15] 
         (uint16_t)    0x0000,         // base[0:15]  
         (uint8_t)     0x00,           // base[23:16] 
