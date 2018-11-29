@@ -128,16 +128,18 @@ uint32_t checkear_poder_div_C(){
   uint32_t peso_tarea_actual = scheduler.peso_por_tarea[Tarea_actual];
   uint32_t peso_valido = peso_tarea_actual > 1;
   
-  uint32_t espacio_tss_libre = 0;
-  if (Tarea_actual < 10)//si es de A
+  uint32_t espacio_tss_libre = false;
+  //Me fijo si la Tarea_actual es de A o B
+  if(Tarea_actual < 10){
     for(int i = 0; i < 10; i++)
       if( scheduler.muertas[i] )
-        espacio_tss_libre = 1;
-  else
+        espacio_tss_libre = true;
+  }else{
     for(int i=10; i<20; i++)
       if(scheduler.muertas[i] )
-        espacio_tss_libre = 1;
-
+        espacio_tss_libre = true;
+  }
+    
   return peso_valido && espacio_tss_libre;    
 }
 
