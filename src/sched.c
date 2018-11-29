@@ -7,6 +7,9 @@
 
 #include "sched.h"
 
+#define abs(x) (x<0? -x : x)
+#define min(a, b) (a<b? a : b)
+#define max(a, b) (a>b? a : b)
 #define true 1
 #define false 0
 
@@ -15,7 +18,7 @@ tablero tablero_sched;
 int Tarea_actual;
 
 void sched_init() {
-/*
+
   //init struct sheduler
   for(int i=0; i<cant_tareas; i++)
     scheduler.falta_jugar[i] = 0x0;
@@ -57,18 +60,13 @@ void sched_init() {
   tablero_sched.info[10][10]=Playe;
   tablero_sched.info[40][40]=Opp;
 
-  //init algunas frutas
-  //manera fachera de poner 22 frutas
-  //en celdas != a las tareas
-  for(int i=0; i<22; i++){
-    int x = rand()%tam_tablero;
-    int y = rand()%tam_tablero;
-    if( (x==10 && y==10) || (x==40 && y==40) )
-      i--;
-    else
-      tablero_sched.info[x][y]=Fruta;
+  //init algunas frutas (10)
+  coord init_frutas[10] = {{0,0}, {2,10}, {5,20}, {5,12}, {6,29}, {29,23}, {29,40}, {29,49}, {0,40}, {30,30}};
+  for(int i=0; i<10; i++){
+    int x = init_frutas[i].x;
+    int y = init_frutas[i].y;
+    tablero_sched.info[x][y]=Fruta;
   }
-  */
 }
 
 
@@ -79,14 +77,14 @@ int16_t sched_nextTask() {
 
 //funciones auxiliares de read
 uint32_t chequear_vision_C(int32_t eax, int32_t ebx){
- /* int x = scheduler.coordenadas_actuales[Tarea_actual].x;
+  int x = scheduler.coordenadas_actuales[Tarea_actual].x;
   int y = scheduler.coordenadas_actuales[Tarea_actual].y;
 
   int distancia_pedida = abs(x-eax)+abs(y-ebx);
-  int distancia_maxima = scheduler.peso_por_tarea[Tarea_actual]
+  int distancia_maxima = scheduler.peso_por_tarea[Tarea_actual];
   int distancia_efectiva = min(distancia_pedida, distancia_maxima);
   
-  return distancia_efectiva > distancia_maxima;*/
+  return distancia_efectiva > distancia_maxima;
   return 0;
 }
 
@@ -100,7 +98,7 @@ uint32_t read_C(int32_t eax, int32_t ebx){
 
 //funciones auxiliares de move
 uint32_t move_actualizar_C(uint32_t distancia, uint32_t dir){
-  /*int x = scheduler.coordenadas_actuales[Tarea_actual].x;
+  int x = scheduler.coordenadas_actuales[Tarea_actual].x;
   int y = scheduler.coordenadas_actuales[Tarea_actual].y;
 
   int maxima_distancia_moverse = 64/scheduler.peso_por_tarea[Tarea_actual];
@@ -118,7 +116,7 @@ uint32_t move_actualizar_C(uint32_t distancia, uint32_t dir){
 
   scheduler.coordenadas_siguientes[Tarea_actual] = a_donde_me_muevo;
 
-  return distancia_efectiva;*/
+  return distancia_efectiva;
   return 0;
 }
 
@@ -144,19 +142,20 @@ uint32_t checkear_poder_div_C(){
 }
 
 uint32_t copiar_tarea_C(){
-/*
+
   scheduler.peso_por_tarea[Tarea_actual] /= 2;
 
   int indice_nueva_tarea;
-  if (Tarea_actual < 10)//si es de A
+  //Me fijo si la Tarea_actual es de A o B 
+  if(Tarea_actual < 10){
     for(int i = 0; i < 10; i++)
       if( scheduler.muertas[i] )
-        indice_nueva_tarea = i, goto encontre_indice;
-  else//si es de B
+        {indice_nueva_tarea = i; break;}
+  }else{
     for(int i=10; i<20; i++)
       if( scheduler.muertas[i] )
-        indice_nueva_tarea = i, goto encontre_indice;
-  encontre_indice:
+        {indice_nueva_tarea = i; break;}
+  }
 
   //existe una biyeccion entre indices tareas e indices de tss
   tss* nueva_tss =  &tss_array[indice_nueva_tarea];
@@ -169,6 +168,7 @@ uint32_t copiar_tarea_C(){
   scheduler.peso_por_tarea[indice_nueva_tarea] = scheduler.peso_por_tarea[Tarea_actual];
     //con 0 puntos
   scheduler.puntos_por_tarea[indice_nueva_tarea] = 0;
-*/
+
   return 1;
 }
+
