@@ -62,7 +62,7 @@ typedef struct str_tss {
 void tss_inicializar(tss* tss_task, uint32_t jugador);
 void tss_set_attr(tss* tss_task, uint32_t pila0);
 
-extern tss array_tss[];
+extern tss tss_array[TSS_MAX_AMOUNT_TASKS];
 void tss_init();
 
 #endif  /* !__TSS_H__ */

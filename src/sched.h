@@ -54,5 +54,6 @@ uint32_t move_actualizar_C(uint32_t distancia, uint32_t dir);
 uint32_t checkear_poder_div();
 uint32_t copiar_tarea_C();
 
-extern schedu scheduler[];
+extern schedu scheduler;
+extern tablero tablero_sched;
 #endif	/* !__SCHED_H__ */

@@ -9,9 +9,6 @@
 #include "mmu.h"
 #include "gdt.h"
 
-tss tss_array[TSS_MAX_AMOUNT_TASKS];
-
-
 // inicializar tarea para un jugador, se llama en la función tss_inicializar
 void tss_init_gdt(uint32_t i, uint32_t cr3){
   //mmu_initTaskDir(char jugador, uint32_t cr3);

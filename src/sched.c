@@ -38,20 +38,23 @@ void sched_init() {
   for(int i=0; i<cant_tareas; i++)
     scheduler.cant_llamadas_a_read_por_tarea[i]=0;
 
+  coord coor_init = {0,0};
   for(int i=0; i<cant_tareas; i++)
-    scheduler.coordenadas_actuales[i]={0,0};
-  scheduler.coordenadas_actuales[0] = {10,10};
-  scheduler.coordenadas_actuales[10] = {40, 40};
+    scheduler.coordenadas_actuales[i]=coor_init;
+  coord a = {10,10};
+  coord b = {40,40};
+  scheduler.coordenadas_actuales[0] = a;
+  scheduler.coordenadas_actuales[10] = b;
 
   for(int i=0; i<cant_tareas; i++)
-    scheduler.coordenadas_siguientes[i]={0,0};
+    scheduler.coordenadas_siguientes[i]=coor_init;
 
-  //init struct tablero_juego
+  //init struct tablero_sched_juego
   for(int i=0; i<tam_tablero; i++)
     for(int j=0; j<tam_tablero; j++)
-      tablero[i][j]=Non;
-  tablero[10][10]=Playe;
-  tablero[40][40]=Opp;
+      tablero_sched.info[i][j]=Non;
+  tablero_sched.info[10][10]=Playe;
+  tablero_sched.info[40][40]=Opp;
 
   //init algunas frutas
   //manera fachera de poner 22 frutas
@@ -62,7 +65,7 @@ void sched_init() {
     if( (x==10 && y==10) || (x==40 && y==40) )
       i--;
     else
-      tablero[x][y]=Fruta;
+      tablero_sched.info[x][y]=Fruta;
   }
 }
 
@@ -89,7 +92,7 @@ uint32_t read_C(int32_t eax, int32_t ebx){
   int y = scheduler.coordenadas_actuales[Tarea_actual].y;
 
   scheduler.cant_llamadas_a_read_por_tarea[Tarea_actual]++;
-  return tablero[ ((eax+x)+tam_tablero)%tam_tablero ][ ((ebx+y)+tam_tablero)%tam_tablero ];
+  return tablero_sched.info[ ((eax+x)+tam_tablero)%tam_tablero ][ ((ebx+y)+tam_tablero)%tam_tablero ];
 }
 
 //funciones auxiliares de move
@@ -150,7 +153,7 @@ uint32_t copiar_tarea_C(){
   encontre_indice:
 
   //existe una biyeccion entre indices tareas e indices de tss
-  *tss nueva_tss =  &tss_array[indice_nueva_tarea];
+  tss* nueva_tss =  &tss_array[indice_nueva_tarea];
   tss_inicializar(nueva_tss, indice_nueva_tarea);
 
   //inicializo informaciones de la nueva tarea
