@@ -67,9 +67,10 @@ void idt_init() {
     IDT_ENTRY(18,(uint16_t)0x8E00);
     IDT_ENTRY(19,(uint16_t)0x8E00);
 
-    IDT_ENTRY(71,(uint16_t)0x8E00); 
-    IDT_ENTRY(73,(uint16_t)0x8E00);
-    IDT_ENTRY(76,(uint16_t)0xEE00); // dudosos atributos
+    //son servicios de las tareas, dpl = 3
+    IDT_ENTRY(71,(uint16_t)0xE500);
+    IDT_ENTRY(73,(uint16_t)0xE500);
+    IDT_ENTRY(76,(uint16_t)0xE500);
 
     IDT_ENTRY(32,(uint16_t)0x8E00);
     IDT_ENTRY(33,(uint16_t)0x8E00);

@@ -130,13 +130,11 @@ uint32_t mmu_initTaskDir(void* tss_task2){//inicializa el directorio de una tare
     tss* tss_task = (tss*) tss_task2;
     page_dir_entry* pd = (page_dir_entry*) mmu_nextFreeKernelPage();
     page_table_entry* pt = (page_table_entry*) mmu_nextFreeKernelPage();
-    uint32_t page1 = mmu_nextFreeTaskPage_fisica();
-    uint32_t page2 = mmu_nextFreeTaskPage_fisica();
     tss_task->cr3 = (uint32_t) pd;
-    tss_task->eip = page1;
     pd[0].base = ((uint32_t) pt) >> 12;
     //mapeo con u/s = 1, r/w = 1, p = 1
-/*   mmu_mapPage(page1, cr3_kernel, page1, 0x5);
+/*
+    mmu_mapPage(page1, cr3_kernel, page1, 0x5);
     mmu_mapPage(page2, cr3_kernel, page2, 0x5);
 
     copyHomework((char *)0x14000,(char *)page1);
@@ -145,11 +143,8 @@ uint32_t mmu_initTaskDir(void* tss_task2){//inicializa el directorio de una tare
     mmu_unmapPage(page1, cr3_kernel);
     mmu_unmapPage(page2, cr3_kernel);
 */
-    mmu_mapPage(TASK_CODE, tss_task->cr3, page1, 0x5);
-    mmu_mapPage(TASK_CODE+0x1000, tss_task->cr3, page2, 0x5);
-    tss_task->eip = TASK_CODE;
 
-    return 0;
+    return cr3_kernel;
 }
 
 uint32_t mmu_mappear4mbKernel() {

@@ -89,7 +89,7 @@ void tss_idle_initial() {
       (uint16_t)  0x0,//unused
       (uint16_t)  0x0,//ldt
       (uint16_t)  0x0,//unused
-      (uint16_t)  0x1, //dtrap
+      (uint16_t)  0x0, //dtrap
       (uint16_t)  0x0 //iomap
   };
     tss_array[21] = (tss) {
@@ -129,7 +129,7 @@ void tss_idle_initial() {
       (uint16_t)  0x0, //unused
       (uint16_t)  0x0, //ldt - PREGUNTAR
       (uint16_t)  0x0, //unused
-      (uint16_t)  0x1, //dtrap
+      (uint16_t)  0x0, //dtrap
       (uint16_t)  0x0 //iomap
   };
   
@@ -163,7 +163,7 @@ void tss_idle_initial() {
 
   mmu_mapPage(TASK_CODE, tss_array[21].cr3, phy, 0x5);
   mmu_mapPage(TASK_CODE+0x1000, tss_array[21].cr3, phy2, 0x5);
-  tss_array[21].eip = phy;
+  tss_array[21].eip = TASK_CODE;
 
   /*Iniciar pila0 de la tarea*/
   uint32_t pila_0 =  mmu_nextFreeKernelPage();
@@ -183,23 +183,35 @@ void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
   gdt[jugador].limit_0_15 = sizeof(*tss_task) && 0xFFFF;
   gdt[jugador].limit_16_19 = (sizeof(*tss_task) >> 16) && 0xFFFF;
   //Inicio directorio y tabla para la tarea
-  mmu_initTaskDir(tss_task); 
+  uint32_t cr3_kernel =  mmu_initTaskDir(tss_task); 
   for(uint32_t i = 0; i < 1024; i++)//mapeo el kernel y area libre de kernel a cada tarea
   {
     mmu_mapPage(i, tss_task->cr3, i, 0x3);//pd y pt como supervisor
   }
   
-  uint32_t page_pila0 = mmu_nextFreeKernelPage();
+  uint32_t page1 = mmu_nextFreeTaskPage_fisica();
+  uint32_t page2 = mmu_nextFreeTaskPage_fisica();
+  tss_task->eip = page1;
   //la tarea tiene mapeada 2 paginas virtuales, para C y D
-  //la tercer pagina virtual es para la pila lvl0
-  mmu_mapPage(0x08002000, tss_task->cr3, page_pila0, 0x3);
-  tss_set_attr(tss_task, page_pila0);
+  mmu_mapPage(page1, cr3_kernel, page1, 0x5);
+  mmu_mapPage(page2, cr3_kernel, page2, 0x5);
   if (jugador <= 10) {//jugador tipos A
     copyHomework((char* )0x10000, (char* )tss_task->eip);
+    copyHomework((char* )0x11000, (char* )tss_task->eip+0x1000);
   }
   else{//jugador tipo B
     copyHomework((char* )0x12000, (char* )tss_task->eip);
+    copyHomework((char* )0x13000, (char* )tss_task->eip+0x1000);
   }
+  mmu_unmapPage(page1, cr3_kernel);
+  mmu_unmapPage(page2, cr3_kernel);
+  mmu_mapPage(TASK_CODE, tss_task->cr3, page1, 0x5);
+  mmu_mapPage(TASK_CODE+0x1000, tss_task->cr3, page2, 0x5);
+  tss_task->eip = TASK_CODE;
+  //la tercer pagina virtual es para la pila lvl0
+  uint32_t page_pila0 = mmu_nextFreeKernelPage();
+  mmu_mapPage(0x08002000, tss_task->cr3, page_pila0, 0x3);
+  tss_set_attr(tss_task, page_pila0);
 }
 
 void tss_set_attr(tss* tss_task, uint32_t pila0){
