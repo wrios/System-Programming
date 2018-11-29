@@ -59,7 +59,7 @@ void tss_idle_initial() {
       (uint16_t)  0x0,//ss0
       (uint16_t)  0x0,//unused
       (uint32_t)  0x0,//esp1
-      (uint16_t)  0x0,//ss0
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3),//ss0
       (uint16_t)  0x0,//unused
       (uint32_t)  0x0,//esp2
       (uint16_t)  0x0,//ss2
@@ -75,17 +75,17 @@ void tss_idle_initial() {
       (uint32_t)  0x0,//ebp
       (uint32_t)  0x0,//esi
       (uint32_t)  0x0,//edi
-      (uint16_t)  0x0,//es
+      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3),//es
       (uint16_t)  0x0,//unused
-      (uint16_t)  0x0,//cs
+      (uint16_t)  (GDT_ENTRY_CODES_USER<<3),//cs
       (uint16_t)  0x0,//unused
-      (uint16_t)  0x0,//ss
+      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3),//ss
       (uint16_t)  0x0,//unused
-      (uint16_t)  0x0,//ds
+      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3),//ds
       (uint16_t)  0x0,//unused
-      (uint16_t)  0x0,//fs
+      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3),//fs
       (uint16_t)  0x0,//unused
-      (uint16_t)  0x0,//gs
+      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3),//gs
       (uint16_t)  0x0,//unused
       (uint16_t)  0x0,//ldt
       (uint16_t)  0x0,//unused
