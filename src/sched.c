@@ -10,11 +10,12 @@
 #define true 1
 #define false 0
 
-
+schedu scheduler;
+tablero tablero_sched;
 int Tarea_actual;
 
 void sched_init() {
-
+/*
   //init struct sheduler
   for(int i=0; i<cant_tareas; i++)
     scheduler.falta_jugar[i] = 0x0;
@@ -67,6 +68,7 @@ void sched_init() {
     else
       tablero_sched.info[x][y]=Fruta;
   }
+  */
 }
 
 
@@ -77,14 +79,15 @@ int16_t sched_nextTask() {
 
 //funciones auxiliares de read
 uint32_t chequear_vision_C(int32_t eax, int32_t ebx){
-  int x = scheduler.coordenadas_actuales[Tarea_actual].x;
+ /* int x = scheduler.coordenadas_actuales[Tarea_actual].x;
   int y = scheduler.coordenadas_actuales[Tarea_actual].y;
 
   int distancia_pedida = abs(x-eax)+abs(y-ebx);
   int distancia_maxima = scheduler.peso_por_tarea[Tarea_actual]
   int distancia_efectiva = min(distancia_pedida, distancia_maxima);
   
-  return distancia_efectiva > distancia_maxima;
+  return distancia_efectiva > distancia_maxima;*/
+  return 0;
 }
 
 uint32_t read_C(int32_t eax, int32_t ebx){
@@ -97,7 +100,7 @@ uint32_t read_C(int32_t eax, int32_t ebx){
 
 //funciones auxiliares de move
 uint32_t move_actualizar_C(uint32_t distancia, uint32_t dir){
-  int x = scheduler.coordenadas_actuales[Tarea_actual].x;
+  /*int x = scheduler.coordenadas_actuales[Tarea_actual].x;
   int y = scheduler.coordenadas_actuales[Tarea_actual].y;
 
   int maxima_distancia_moverse = 64/scheduler.peso_por_tarea[Tarea_actual];
@@ -115,12 +118,13 @@ uint32_t move_actualizar_C(uint32_t distancia, uint32_t dir){
 
   scheduler.coordenadas_siguientes[Tarea_actual] = a_donde_me_muevo;
 
-  return distancia_efectiva;
+  return distancia_efectiva;*/
+  return 0;
 }
 
 
 //funciones auxiliares de divide
-uint32_t checkear_poder_div(){
+uint32_t checkear_poder_div_C(){
   uint32_t peso_tarea_actual = scheduler.peso_por_tarea[Tarea_actual];
   uint32_t peso_valido = peso_tarea_actual > 1;
   
@@ -138,7 +142,7 @@ uint32_t checkear_poder_div(){
 }
 
 uint32_t copiar_tarea_C(){
-
+/*
   scheduler.peso_por_tarea[Tarea_actual] /= 2;
 
   int indice_nueva_tarea;
@@ -163,6 +167,6 @@ uint32_t copiar_tarea_C(){
   scheduler.peso_por_tarea[indice_nueva_tarea] = scheduler.peso_por_tarea[Tarea_actual];
     //con 0 puntos
   scheduler.puntos_por_tarea[indice_nueva_tarea] = 0;
-
+*/
   return 1;
 }

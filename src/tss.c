@@ -8,7 +8,7 @@
 #include "tss.h"
 #include "mmu.h"
 #include "gdt.h"
-
+tss tss_array[TSS_MAX_AMOUNT_TASKS];
 // inicializar tarea para un jugador, se llama en la función tss_inicializar
 void tss_init_gdt(uint32_t i, uint32_t cr3){
   //mmu_initTaskDir(char jugador, uint32_t cr3);
@@ -167,7 +167,7 @@ void tss_idle_initial() {
 
   /*Iniciar pila0 de la tarea*/
   uint32_t pila_0 =  mmu_nextFreeKernelPage();
-  mmu_mapPage(TASK_CODE+0x2000, tss_array[21].cr3, phy + 0x2000, 0x5);
+  mmu_mapPage(TASK_CODE+0x2000, tss_array[21].cr3, pila_0, 0x5);
   /*Esta pagina es para pila, entonces la base sera el ultimo byte alcanzable por la pagina
   y el primer byte es el ultimo*/
 

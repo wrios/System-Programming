@@ -51,7 +51,7 @@ typedef struct tablero_juego{
 uint32_t chequear_vision_C(int32_t eax, int32_t ebx);
 uint32_t read_C(int32_t eax, int32_t ebx);
 uint32_t move_actualizar_C(uint32_t distancia, uint32_t dir);
-uint32_t checkear_poder_div();
+uint32_t checkear_poder_div_C();
 uint32_t copiar_tarea_C();
 
 extern schedu scheduler;
