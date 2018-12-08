@@ -42,12 +42,12 @@ typedef struct scheduler{
   coord coordenadas_actuales[cant_tareas];
   coord coordenadas_siguientes[cant_tareas];
 
+  //10 None, 20 Player, 30 Opp, 16/32/64 Fruta
+  int tablero[tam_tablero][tam_tablero];
+
+
 } schedu;
 
-typedef struct tablero_juego{
-  //10 None, 20 Player, 30 Opp, 40 Fruta
-  int info[tam_tablero][tam_tablero];
-} tablero;
 uint32_t chequear_vision_C(int32_t eax, int32_t ebx);
 uint32_t read_C(int32_t eax, int32_t ebx);
 uint32_t move_actualizar_C(uint32_t distancia, uint32_t dir);

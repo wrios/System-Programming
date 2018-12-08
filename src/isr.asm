@@ -182,10 +182,17 @@ global _isr32
 _isr32:
         pushad
         call pic_finish1
-        call nextClock
-        
-        ;xchg bx, bx
-        popad
+        call sched_nextTask
+        shl ax, 3
+        ;add ax, 3
+        str cx
+        cmp ax, cx
+        je .fin
+        xchg bx, bx
+        mov [sched_task_selector], ax
+        jmp far [sched_task_offset]
+
+.fin:   popad
         iret
 
 
@@ -285,8 +292,8 @@ extern read_C
 _isr71:
         pushad
 
-        push eax; x
-        push ebx; y
+        push ebx; x
+        push eax; y
         call chequear_vision_C
         cmp eax, 1; si puedo ver esa posicion
         jne devuelvo_Null

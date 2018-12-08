@@ -8,6 +8,8 @@
 #include "tss.h"
 #include "mmu.h"
 #include "gdt.h"
+
+
 tss tss_array[TSS_MAX_AMOUNT_TASKS];
 // inicializar tarea para un jugador, se llama en la función tss_inicializar
 void tss_init_gdt(uint32_t i, uint32_t cr3){
@@ -147,6 +149,28 @@ void tss_idle_initial() {
   gdt[28].base_23_16 = ((uint32_t)(&tss_array[21]) << 8) >> 24;
   gdt[28].base_31_24 = (uint32_t)(&tss_array[21]) >> 24;
   
+
+  for(uint32_t i = 31; i < 51; i++)
+    {
+        gdt[i] = (gdt_entry) {
+            (uint16_t)    0x67,         // limit[0:15]
+            (uint16_t)    0x0000,         // base[0:15]
+            (uint8_t)     0x00,           // base[23:16]
+            //type 10B1(B es el bit de Busy, inicialmente en 0)
+            (uint8_t)     0x09,           // type
+            (uint8_t)     0x00,           // s
+            (uint8_t)     0x03,           // dpl
+            (uint8_t)     0x01,           // p
+            (uint8_t)     0x00,           // limit[16:19]
+            (uint8_t)     0x00,           // avl
+            (uint8_t)     0x00,           // l
+            (uint8_t)     0x00,           // db
+            (uint8_t)     0x00,           // g
+            (uint8_t)     0x00,           // base[31:24]
+        };
+    };
+
+
   /*Iniciar pd, pt para la tarea y copiar codigo y dato*/
   uint32_t phy = mmu_nextFreeTaskPage_fisica();
   mmu_mapPage(phy, tss_array[21].cr3, phy, attr);
@@ -177,11 +201,11 @@ void tss_idle_initial() {
 
 void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
   //Inicio la GDT 
-  gdt[jugador].base_0_15 = ((uint32_t)tss_task) && 0xFFFF; 
-  gdt[jugador].base_23_16 = (((uint32_t)tss_task) >> 16) && 0xFFFF;
-  gdt[jugador].base_31_24 = (((uint32_t)tss_task) >> 24) && 0xFFFF;
-  gdt[jugador].limit_0_15 = sizeof(*tss_task) && 0xFFFF;
-  gdt[jugador].limit_16_19 = (sizeof(*tss_task) >> 16) && 0xFFFF;
+  gdt[jugador + 31].base_0_15 = (((uint32_t)tss_task) << 16) >> 16; 
+  gdt[jugador + 31].base_23_16 = (((uint32_t)tss_task) << 8) >> 24;
+  gdt[jugador + 31].base_31_24 = (((uint32_t)tss_task) >> 24);
+  //gdt[jugador + 31].limit_0_15 = sizeof(*tss_task) && 0xFFFF;
+  //gdt[jugador + 31].limit_16_19 = (sizeof(*tss_task) >> 16) && 0xFFFF;
   //Inicio directorio y tabla para la tarea
   uint32_t cr3_kernel =  mmu_initTaskDir(tss_task); 
   for(uint32_t i = 0; i < 1024; i++)//mapeo el kernel y area libre de kernel a cada tarea
@@ -211,11 +235,24 @@ void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
   //la tercer pagina virtual es para la pila lvl0
   uint32_t page_pila0 = mmu_nextFreeKernelPage();
   mmu_mapPage(0x08002000, tss_task->cr3, page_pila0, 0x3);
-  tss_set_attr(tss_task, page_pila0);
+  tss_set_attr(tss_task);
+  breakpoint_(tss_task);
+
 }
 
-void tss_set_attr(tss* tss_task, uint32_t pila0){
-  tss_task->ebp = pila0;
-  tss_task->esp = pila0;
+void tss_set_attr(tss* tss_task){
+  tss_task->dtrap = 0x0;
+  tss_task->ldt = 0x0;
+  tss_task->ebp = 0x08002000;
+  tss_task->esp = 0x08002000;
   tss_task->eflags = 0x202;
+  tss_task->esp0 = 0x08003000;
+  tss_task->ptl = 0x00;
+  tss_task->es = (GDT_ENTRY_DATAS_USER<<3);
+  tss_task->ds = (GDT_ENTRY_DATAS_USER<<3);
+  tss_task->fs = (GDT_ENTRY_DATAS_USER<<3);
+  tss_task->cs = (GDT_ENTRY_CODES_USER<<3);
+  tss_task->gs = (GDT_ENTRY_DATAS_USER<<3);
+  tss_task->ss = (GDT_ENTRY_DATAS_USER<<3);
+  tss_task->ss0 = (GDT_ENTRY_DATAS_KERNEL<<3);
 }

@@ -30,7 +30,7 @@
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
-#define GDT_COUNT 30
+#define GDT_COUNT 200
 
 // EMPIEZA EN 22 O 21?
 #define GDT_IDX_NULL_DESC                0

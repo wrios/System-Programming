@@ -130,7 +130,7 @@ uint32_t mmu_initTaskDir(void* tss_task2){//inicializa el directorio de una tare
     tss* tss_task = (tss*) tss_task2;
     page_dir_entry* pd = (page_dir_entry*) mmu_nextFreeKernelPage();
     page_table_entry* pt = (page_table_entry*) mmu_nextFreeKernelPage();
-    tss_task->cr3 = (uint32_t) pd;
+    tss_task->cr3 = ((uint32_t) pd >> 12) << 12;
     pd[0].base = ((uint32_t) pt) >> 12;
     //mapeo con u/s = 1, r/w = 1, p = 1
 /*
