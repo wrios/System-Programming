@@ -75,7 +75,7 @@ int16_t sched_nextTask() {
   while(i < 20 &&scheduler.falta_jugar[i] != 1 && scheduler.muertas[i] != 1) 
     i++;
 
-  return i;
+  return 31;
   /*
   scheduler.falta_jugar[i] = 0;
 

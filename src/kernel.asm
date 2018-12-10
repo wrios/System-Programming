@@ -167,17 +167,24 @@ MP:
     ;cargar indice de la tarea inicial
     mov ax, 27<<3;[0..1]RPL = 00, [2] = 0(GDT), 11001 = 1B
     ltr ax
-    ;jmp a la tarea IDLE
+    mov ax, 28<<3;[0..1]RPL = 0, [2] = 0(GDT), 11100 = 1C
     call sched_init
+    ;call game_init
+    
+    mov [sched_task_selector], ax
+    xchg bx, bx
+    jmp far [sched_task_offset]
+    
+    sti
 
-    call game_init
-        xchg bx, bx
+    
+    
+        
+    ;jmp a la tarea IDLE
 
     ;sti ;se activa el flag IF del registro EFLAGS
-    ;mov ax, 28<<3;[0..1]RPL = 0, [2] = 0(GDT), 11100 = 1C
-    ;mov [sched_task_selector], ax
-    ;jmp far [sched_task_offset]
-        
+    
+    
     ;Para pasar a paginación, hacer un Aling 4096
     ;Activar paginación
     ;Armar un directorio de paginas y tablas de paginas
@@ -202,6 +209,7 @@ MP:
     mov ecx, 0xFFFF
     mov edx, 0xFFFF
     jmp $
+
 
 
 ;; -------------------------------------------------------------------------- ;;

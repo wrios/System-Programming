@@ -13,7 +13,6 @@ void game_init() {
     tss_inicializar(&tss_array[10], 10);
     tss_array[0].eax = 64;
     tss_array[10].eax = 64;
-    breakpoint();
 
 
 }

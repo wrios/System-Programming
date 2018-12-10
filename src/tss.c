@@ -66,7 +66,7 @@ void tss_idle_initial() {
       (uint32_t)  0x0,//esp2
       (uint16_t)  0x0,//ss2
       (uint16_t)  0x0,//unused
-      (uint32_t)  0x0,//cr3
+      (uint32_t)  0x27000,//cr3
       (uint32_t)  0x0,//eip
       (uint32_t)  0x202,//eflags
       (uint32_t)  0x0,//eax
@@ -77,28 +77,28 @@ void tss_idle_initial() {
       (uint32_t)  0x0,//ebp
       (uint32_t)  0x0,//esi
       (uint32_t)  0x0,//edi
-      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3) + 0x03,//es
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3),//es
       (uint16_t)  0x0,//unused
-      (uint16_t)  (GDT_ENTRY_CODES_USER<<3) + 0x03,//cs
+      (uint16_t)  (GDT_ENTRY_CODES_KERNEL<<3),//cs
       (uint16_t)  0x0,//unused
-      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3) + 0x03,//ss
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3),//ss
       (uint16_t)  0x0,//unused
-      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3) + 0x03,//ds
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3),//ds
       (uint16_t)  0x0,//unused
-      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3) + 0x03,//fs
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3),//fs
       (uint16_t)  0x0,//unused
-      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3) + 0x03,//gs
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3),//gs
       (uint16_t)  0x0,//unused
       (uint16_t)  0x0,//ldt
       (uint16_t)  0x0,//unused
       (uint16_t)  0x0, //dtrap
-      (uint16_t)  0x0 //iomap
+      (uint16_t)  0xFFFF //iomap
   };
     tss_array[21] = (tss) {
       (uint16_t)  0x0, // ptl
       (uint16_t)  0x0, // reserved
-      (uint32_t)  0x00027000, //comparte con el kernel (esp0)
-      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), //ss0 PREGUNTAR QUE ONDA ESTO
+      (uint32_t)  0x0, //comparte con el kernel (esp0)
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), //ss0 
       (uint16_t)  0x0, // reserved
       (uint32_t)  0x0, // esp1
       (uint16_t)  0x0,  //  ss1,
@@ -106,7 +106,7 @@ void tss_idle_initial() {
       (uint32_t)  0x0, //esp2
       (uint16_t)  0x0, //ss2,
       (uint16_t)  0x0, // unused
-      (uint32_t)  0x00027000, // cr3
+      (uint32_t)  0x27000, // cr3
       (uint32_t)  0x14000, // eip
       (uint32_t)  0x202, // eflags (Interrupciones habilitadas)
       (uint32_t)  0x0, // eax
@@ -132,7 +132,7 @@ void tss_idle_initial() {
       (uint16_t)  0x0, //ldt - PREGUNTAR
       (uint16_t)  0x0, //unused
       (uint16_t)  0x0, //dtrap
-      (uint16_t)  0x0 //iomap
+      (uint16_t)  0xFFFF //iomap
   };
   
   // identity mapping por enunciado
