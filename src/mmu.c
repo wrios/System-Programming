@@ -131,20 +131,10 @@ uint32_t mmu_initTaskDir(void* tss_task2){//inicializa el directorio de una tare
     page_dir_entry* pd = (page_dir_entry*) mmu_nextFreeKernelPage();
     page_table_entry* pt = (page_table_entry*) mmu_nextFreeKernelPage();
     tss_task->cr3 = ((uint32_t) pd >> 12) << 12;
-    pd[0].base = ((uint32_t) pt) >> 12;
+    pd[1].base = ((uint32_t) pt) >> 12;
     //mapeo con u/s = 1, r/w = 1, p = 1
-/*
-    mmu_mapPage(page1, cr3_kernel, page1, 0x5);
-    mmu_mapPage(page2, cr3_kernel, page2, 0x5);
 
-    copyHomework((char *)0x14000,(char *)page1);
-    copyHomework((char *)0x15000,(char *)page2);
-
-    mmu_unmapPage(page1, cr3_kernel);
-    mmu_unmapPage(page2, cr3_kernel);
-*/
-
-    return cr3_kernel;
+    return tss_task->cr3;
 }
 
 uint32_t mmu_mappear4mbKernel() {

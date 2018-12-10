@@ -77,17 +77,17 @@ void tss_idle_initial() {
       (uint32_t)  0x0,//ebp
       (uint32_t)  0x0,//esi
       (uint32_t)  0x0,//edi
-      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3),//es
+      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3) + 0x03,//es
       (uint16_t)  0x0,//unused
-      (uint16_t)  (GDT_ENTRY_CODES_USER<<3),//cs
+      (uint16_t)  (GDT_ENTRY_CODES_USER<<3) + 0x03,//cs
       (uint16_t)  0x0,//unused
-      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3),//ss
+      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3) + 0x03,//ss
       (uint16_t)  0x0,//unused
-      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3),//ds
+      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3) + 0x03,//ds
       (uint16_t)  0x0,//unused
-      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3),//fs
+      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3) + 0x03,//fs
       (uint16_t)  0x0,//unused
-      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3),//gs
+      (uint16_t)  (GDT_ENTRY_DATAS_USER<<3) + 0x03,//gs
       (uint16_t)  0x0,//unused
       (uint16_t)  0x0,//ldt
       (uint16_t)  0x0,//unused
@@ -117,17 +117,17 @@ void tss_idle_initial() {
       (uint32_t)  0x00000,// ebp pedir paginas para C y D(ebp3)
       (uint32_t)  0x0, // esi
       (uint32_t)  0x0, // edi
-      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // es
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3) + 0x03, // es
       (uint16_t)  0x0, // unused
-      (uint16_t)  (GDT_ENTRY_CODES_KERNEL<<3), // cs
+      (uint16_t)  (GDT_ENTRY_CODES_KERNEL<<3) + 0x03, // cs
       (uint16_t)  0x0, // unused
-      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // ss segmento pila del kernel RE PREGUNTAR
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3) + 0x03, // ss segmento pila del kernel RE PREGUNTAR
       (uint16_t)  0x0, // unused
-      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // ds kernel
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3) + 0x03, // ds kernel
       (uint16_t)  0x0, //unused
-      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // fs kernel - PREGUNTAR
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3) + 0x03, // fs kernel - PREGUNTAR
       (uint16_t)  0x0, // unused
-      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // gs data kernel
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3) + 0x03, // gs data kernel
       (uint16_t)  0x0, //unused
       (uint16_t)  0x0, //ldt - PREGUNTAR
       (uint16_t)  0x0, //unused
@@ -136,8 +136,7 @@ void tss_idle_initial() {
   };
   
   // identity mapping por enunciado
-  uint32_t attr = 0x5; //  U/S = 1, R/W = 1, P = 1
-  tss_array[21].eip = 0x00014000;
+  uint32_t attr = 0x7; //  U/S = 1, R/W = 1, P = 1
   tss_array[21].cr3 = 0x27000;//comparte cr3 con el kernel
   tss_array[21].esp0 = 0x27000;//comparte pila0 con el kernel
 
@@ -185,18 +184,13 @@ void tss_idle_initial() {
   mmu_unmapPage(phy, tss_array[21].cr3);
   mmu_unmapPage(phy2, tss_array[21].cr3);
 
-  mmu_mapPage(TASK_CODE, tss_array[21].cr3, phy, 0x5);
-  mmu_mapPage(TASK_CODE+0x1000, tss_array[21].cr3, phy2, 0x5);
+  mmu_mapPage(TASK_CODE, tss_array[21].cr3, phy, 0x7);
+  mmu_mapPage(TASK_CODE+0x1000, tss_array[21].cr3, phy2, 0x7);
   tss_array[21].eip = TASK_CODE;
 
-  /*Iniciar pila0 de la tarea*/
-  uint32_t pila_0 =  mmu_nextFreeKernelPage();
-  mmu_mapPage(TASK_CODE+0x2000, tss_array[21].cr3, pila_0, 0x5);
-  /*Esta pagina es para pila, entonces la base sera el ultimo byte alcanzable por la pagina
-  y el primer byte es el ultimo*/
 
-  tss_array[21].esp = TASK_CODE + 0x1000 -1;
-  tss_array[21].ebp = TASK_CODE + 0x1000 -1;
+  tss_array[21].esp = 0x27000;
+  tss_array[21].ebp = 0x27000;
 }
 
 void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
@@ -207,7 +201,7 @@ void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
   //gdt[jugador + 31].limit_0_15 = sizeof(*tss_task) && 0xFFFF;
   //gdt[jugador + 31].limit_16_19 = (sizeof(*tss_task) >> 16) && 0xFFFF;
   //Inicio directorio y tabla para la tarea
-  uint32_t cr3_kernel =  mmu_initTaskDir(tss_task); 
+  uint32_t thisCR3 =  mmu_initTaskDir(tss_task); 
   for(uint32_t i = 0; i < 1024; i++)//mapeo el kernel y area libre de kernel a cada tarea
   {
     mmu_mapPage(i, tss_task->cr3, i, 0x3);//pd y pt como supervisor
@@ -215,10 +209,9 @@ void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
   
   uint32_t page1 = mmu_nextFreeTaskPage_fisica();
   uint32_t page2 = mmu_nextFreeTaskPage_fisica();
-  tss_task->eip = page1;
   //la tarea tiene mapeada 2 paginas virtuales, para C y D
-  mmu_mapPage(page1, cr3_kernel, page1, 0x5);
-  mmu_mapPage(page2, cr3_kernel, page2, 0x5);
+  mmu_mapPage(page1, thisCR3, page1, 0x5);
+  mmu_mapPage(page2, thisCR3, page2, 0x5);
   if (jugador <= 10) {//jugador tipos A
     copyHomework((char* )0x10000, (char* )tss_task->eip);
     copyHomework((char* )0x11000, (char* )tss_task->eip+0x1000);
@@ -227,16 +220,15 @@ void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
     copyHomework((char* )0x12000, (char* )tss_task->eip);
     copyHomework((char* )0x13000, (char* )tss_task->eip+0x1000);
   }
-  mmu_unmapPage(page1, cr3_kernel);
-  mmu_unmapPage(page2, cr3_kernel);
-  mmu_mapPage(TASK_CODE, tss_task->cr3, page1, 0x5);
-  mmu_mapPage(TASK_CODE+0x1000, tss_task->cr3, page2, 0x5);
+  mmu_unmapPage(page1, thisCR3);
+  mmu_unmapPage(page2, thisCR3);
+  mmu_mapPage(TASK_CODE, tss_task->cr3, page1, 0X7);
+  mmu_mapPage(TASK_CODE+0x1000, tss_task->cr3, page2, 0x7);
   tss_task->eip = TASK_CODE;
   //la tercer pagina virtual es para la pila lvl0
   uint32_t page_pila0 = mmu_nextFreeKernelPage();
   mmu_mapPage(0x08002000, tss_task->cr3, page_pila0, 0x3);
   tss_set_attr(tss_task);
-  breakpoint_(tss_task);
 
 }
 

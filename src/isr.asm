@@ -136,7 +136,6 @@ global _isr%1
 _isr%1:
     mov eax, %1
     print_text_pm error_mp_msg_%1, error_mp_len_%1, 0x07, 0, 0
-    ;xchg bx, bx
 
     jmp 0xB0:0xCACA
     ;jmp off_set_idle:segmento_idle, salta a la tarea idle (codigo en 0x14000)
@@ -188,7 +187,6 @@ _isr32:
         str cx
         cmp ax, cx
         je .fin
-        xchg bx, bx
         mov [sched_task_selector], ax
         jmp far [sched_task_offset]
 
@@ -204,7 +202,6 @@ _isr33:
         call pic_finish1
         xor eax, eax
         in al, 60h
-        ;xchg bx, bx
 
         cmp eax, 0x02
         je .uno
@@ -375,7 +372,6 @@ copyHomework2:
         je .fincopyHomework
         dec ecx
         mov dl, [eax]
-        xchg bx, bx
         mov [ebx], dl
         jmp .ciclo
 .fincopyHomework:

@@ -14,7 +14,6 @@
 #define false 0
 
 schedu scheduler;
-tablero tablero_sched;
 int Tarea_actual;
 
 void sched_init() {
@@ -56,16 +55,16 @@ void sched_init() {
   //init struct tablero_sched_juego
   for(int i=0; i<tam_tablero; i++)
     for(int j=0; j<tam_tablero; j++)
-      tablero_sched.info[i][j]=Non;
-  tablero_sched.info[10][10]=Playe;
-  tablero_sched.info[40][40]=Opp;
+      scheduler.tablero[i][j]=Non;
+  scheduler.tablero[10][10]=Playe;
+  scheduler.tablero[40][40]=Opp;
 
   //init algunas frutas (10)
   coord init_frutas[10] = {{0,0}, {2,10}, {5,20}, {5,12}, {6,29}, {29,23}, {29,40}, {29,49}, {0,40}, {30,30}};
   for(int i=0; i<10; i++){
     int x = init_frutas[i].x;
     int y = init_frutas[i].y;
-    tablero_sched.info[x][y]=Fruta;
+    scheduler.tablero[x][y]=Fruta;
   }
 
 }
@@ -76,6 +75,8 @@ int16_t sched_nextTask() {
   while(i < 20 &&scheduler.falta_jugar[i] != 1 && scheduler.muertas[i] != 1) 
     i++;
 
+  return i;
+  /*
   scheduler.falta_jugar[i] = 0;
 
   if (i < 20)
@@ -171,6 +172,7 @@ int16_t sched_nextTask() {
     }
   }
 
+  return 0;*/
 }
 
 
@@ -184,7 +186,6 @@ uint32_t chequear_vision_C(int32_t eax, int32_t ebx){
   int distancia_efectiva = min(distancia_pedida, distancia_maxima);
   
   return distancia_efectiva > distancia_maxima;
-  return 0;
 }
 
 uint32_t read_C(int32_t eax, int32_t ebx){
@@ -192,7 +193,7 @@ uint32_t read_C(int32_t eax, int32_t ebx){
   int y = scheduler.coordenadas_actuales[Tarea_actual].y;
 
   scheduler.cant_llamadas_a_read_por_tarea[Tarea_actual]++;
-  return tablero_sched.info[ ((eax+x)+tam_tablero)%tam_tablero ][ ((ebx+y)+tam_tablero)%tam_tablero ];
+  return scheduler.tablero[ ((eax+x)+tam_tablero)%tam_tablero ][ ((ebx+y)+tam_tablero)%tam_tablero ];
 }
 
 //funciones auxiliares de move
@@ -216,7 +217,6 @@ uint32_t move_actualizar_C(uint32_t distancia, uint32_t dir){
   scheduler.coordenadas_siguientes[Tarea_actual] = a_donde_me_muevo;
 
   return distancia_efectiva;
-  return 0;
 }
 
 

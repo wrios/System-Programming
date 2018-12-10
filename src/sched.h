@@ -55,5 +55,4 @@ uint32_t checkear_poder_div_C();
 uint32_t copiar_tarea_C();
 
 extern schedu scheduler;
-extern tablero tablero_sched;
 #endif	/* !__SCHED_H__ */

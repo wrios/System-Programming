@@ -56,7 +56,6 @@ start_pm_len equ    $ - start_pm_msg
 ;; Seccion de código.
 ;; -------------------------------------------------------------------------- ;;
 
-   ; ;xchg bx, bx
 
 
 ;; Punto de entrada del kernel.
@@ -137,7 +136,6 @@ MP:
     push 0x27000
     call test_copyHomework
     call tss_idle_initial
-    ;xchg bx, bx
     ; Inicializar el scheduler
 
 
@@ -167,15 +165,15 @@ MP:
 
     ; Saltar a la primera tarea: Idle
     ;cargar indice de la tarea inicial
-    ;xchg bx, bx
     mov ax, 27<<3;[0..1]RPL = 00, [2] = 0(GDT), 11001 = 1B
     ltr ax
     ;jmp a la tarea IDLE
     call sched_init
+        xchg bx, bx
 
     call game_init
+
     sti ;se activa el flag IF del registro EFLAGS
-    
     ;mov ax, 28<<3;[0..1]RPL = 0, [2] = 0(GDT), 11100 = 1C
     ;mov [sched_task_selector], ax
     ;jmp far [sched_task_offset]
@@ -205,9 +203,6 @@ MP:
     mov edx, 0xFFFF
     jmp $
 
-custom_breakpoint:
-    xchg bx, bx
-    ret
 
 ;; -------------------------------------------------------------------------- ;;
 
