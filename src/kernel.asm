@@ -169,11 +169,11 @@ MP:
     ltr ax
     ;jmp a la tarea IDLE
     call sched_init
-        xchg bx, bx
 
     call game_init
+        xchg bx, bx
 
-    sti ;se activa el flag IF del registro EFLAGS
+    ;sti ;se activa el flag IF del registro EFLAGS
     ;mov ax, 28<<3;[0..1]RPL = 0, [2] = 0(GDT), 11100 = 1C
     ;mov [sched_task_selector], ax
     ;jmp far [sched_task_offset]

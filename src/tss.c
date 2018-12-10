@@ -107,27 +107,27 @@ void tss_idle_initial() {
       (uint16_t)  0x0, //ss2,
       (uint16_t)  0x0, // unused
       (uint32_t)  0x00027000, // cr3
-      (uint32_t)  0x00000,
+      (uint32_t)  0x14000, // eip
       (uint32_t)  0x202, // eflags (Interrupciones habilitadas)
       (uint32_t)  0x0, // eax
       (uint32_t)  0x0, // ecx
       (uint32_t)  0x0, // edx
       (uint32_t)  0x0, // ebx
-      (uint32_t)  0x00000,//esp pedir paginas para C y D(esp3)
-      (uint32_t)  0x00000,// ebp pedir paginas para C y D(ebp3)
+      (uint32_t)  0x27000,//esp pedir paginas para C y D(esp3)
+      (uint32_t)  0x27000,// ebp pedir paginas para C y D(ebp3)
       (uint32_t)  0x0, // esi
       (uint32_t)  0x0, // edi
-      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3) + 0x03, // es
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // es
       (uint16_t)  0x0, // unused
-      (uint16_t)  (GDT_ENTRY_CODES_KERNEL<<3) + 0x03, // cs
+      (uint16_t)  (GDT_ENTRY_CODES_KERNEL<<3), // cs
       (uint16_t)  0x0, // unused
-      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3) + 0x03, // ss segmento pila del kernel RE PREGUNTAR
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // ss segmento pila del kernel RE PREGUNTAR
       (uint16_t)  0x0, // unused
-      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3) + 0x03, // ds kernel
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // ds kernel
       (uint16_t)  0x0, //unused
-      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3) + 0x03, // fs kernel - PREGUNTAR
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // fs kernel - PREGUNTAR
       (uint16_t)  0x0, // unused
-      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3) + 0x03, // gs data kernel
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // gs data kernel
       (uint16_t)  0x0, //unused
       (uint16_t)  0x0, //ldt - PREGUNTAR
       (uint16_t)  0x0, //unused
@@ -136,9 +136,7 @@ void tss_idle_initial() {
   };
   
   // identity mapping por enunciado
-  uint32_t attr = 0x7; //  U/S = 1, R/W = 1, P = 1
-  tss_array[21].cr3 = 0x27000;//comparte cr3 con el kernel
-  tss_array[21].esp0 = 0x27000;//comparte pila0 con el kernel
+ // uint32_t attr = 0x7; //  U/S = 1, R/W = 1, P = 1
 
   gdt[27].base_0_15 = ((uint32_t)(&tss_array[20]) << 16) >> 16;
   gdt[27].base_23_16 = ((uint32_t)(&tss_array[20]) << 8) >> 24;
@@ -171,13 +169,13 @@ void tss_idle_initial() {
 
 
   /*Iniciar pd, pt para la tarea y copiar codigo y dato*/
-  uint32_t phy = mmu_nextFreeTaskPage_fisica();
-  mmu_mapPage(phy, tss_array[21].cr3, phy, attr);
+  //uint32_t phy = mmu_nextFreeTaskPage_fisica();
+  //mmu_mapPage(phy, tss_array[21].cr3, phy, attr);
   //mmu_mapPage(0x8000000, tss_array[21].cr3, phy, attr);
-  uint32_t phy2 = mmu_nextFreeTaskPage_fisica();
+  //uint32_t phy2 = mmu_nextFreeTaskPage_fisica();
   //mmu_mapPage(0x8001000, tss_array[21].cr3, phy2, attr);
-  mmu_mapPage(phy2, tss_array[21].cr3, phy2, attr);
-
+  //mmu_mapPage(phy2, tss_array[21].cr3, phy2, attr);
+/*
   copyHomework((char*) 0x14000,(char*)  phy);
   copyHomework((char*) 0x15000,(char*)  phy2);
 
@@ -190,7 +188,7 @@ void tss_idle_initial() {
 
 
   tss_array[21].esp = 0x27000;
-  tss_array[21].ebp = 0x27000;
+  tss_array[21].ebp = 0x27000;*/
 }
 
 void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
