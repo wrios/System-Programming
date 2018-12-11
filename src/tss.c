@@ -208,15 +208,15 @@ void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
   uint32_t page1 = mmu_nextFreeTaskPage_fisica();
   uint32_t page2 = mmu_nextFreeTaskPage_fisica();
   //la tarea tiene mapeada 2 paginas virtuales, para C y D
-  mmu_mapPage(page1, thisCR3, page1, 0x5);
-  mmu_mapPage(page2, thisCR3, page2, 0x5);
+  mmu_mapPage(page1, thisCR3, page1, 0x7);
+  mmu_mapPage(page2, thisCR3, page2, 0x7);
   if (jugador <= 10) {//jugador tipos A
-    copyHomework((char* )0x10000, (char* )tss_task->eip);
-    copyHomework((char* )0x11000, (char* )tss_task->eip+0x1000);
+    copyHomework((char* )0x10000, (char* )page1);
+    copyHomework((char* )0x11000, (char* )page2);
   }
   else{//jugador tipo B
-    copyHomework((char* )0x12000, (char* )tss_task->eip);
-    copyHomework((char* )0x13000, (char* )tss_task->eip+0x1000);
+    copyHomework((char* )0x12000, (char* )page1);
+    copyHomework((char* )0x13000, (char* )page2);
   }
   mmu_unmapPage(page1, thisCR3);
   mmu_unmapPage(page2, thisCR3);

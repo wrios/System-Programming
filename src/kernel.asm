@@ -88,10 +88,10 @@ start:
     ; Pasamos a modo protegido, 8*22 = 0xb0
     ; posicion 22 de la gdt, el descriptor del segmento codigo kernel
 
-BITS 32
+
 MP:
     ; Establecer selectores de segmentos
-
+BITS 32
     xor eax, eax
     mov ax, 0xB8 ; Indice de la GDT 23*8 (bytes) - segmento de data de kernel
     mov ds, ax
@@ -133,8 +133,6 @@ MP:
     
     call create_tss_descriptores
     
-    push 0x27000
-    call test_copyHomework
     call tss_idle_initial
     ; Inicializar el scheduler
 
@@ -162,20 +160,22 @@ MP:
 
     ;IRQ0 para timer
     ;IRQ1 para teclado
-
+    
+    call sched_init
+    xchg bx, bx
+    call game_init
+    xchg bx, bx
     ; Saltar a la primera tarea: Idle
     ;cargar indice de la tarea inicial
     mov ax, 27<<3;[0..1]RPL = 00, [2] = 0(GDT), 11001 = 1B
     ltr ax
+    sti
     mov ax, 28<<3;[0..1]RPL = 0, [2] = 0(GDT), 11100 = 1C
-    call sched_init
-    ;call game_init
-    
     mov [sched_task_selector], ax
     xchg bx, bx
     jmp far [sched_task_offset]
     
-    sti
+    
 
     
     

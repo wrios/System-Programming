@@ -31,8 +31,8 @@ void copyHomework(char* kernel2, char* libre_tareas2){
 void test_copyHomework(int cr3_tarea){
     uint32_t phy = mmu_nextFreeTaskPage_fisica();
     uint32_t phy2 = mmu_nextFreeTaskPage_fisica();
-    mmu_mapPage(phy, cr3_kernel, phy, 0x5);
-    mmu_mapPage(phy2, cr3_kernel, phy2, 0x5);
+    mmu_mapPage(phy, cr3_kernel, phy, 0x7);
+    mmu_mapPage(phy2, cr3_kernel, phy2, 0x7);
 
     copyHomework((char*) 0x14000,(char*)  phy);
     copyHomework((char*) 0x15000,(char*)  phy2);
@@ -40,8 +40,8 @@ void test_copyHomework(int cr3_tarea){
     mmu_unmapPage(phy, cr3_kernel);
     mmu_unmapPage(phy2, cr3_kernel);
 
-    mmu_mapPage(TASK_CODE, cr3_tarea, phy, 0x5);
-    mmu_mapPage(TASK_CODE+0x1000, cr3_tarea, phy2, 0x5);
+    mmu_mapPage(TASK_CODE, cr3_tarea, phy, 0x7);
+    mmu_mapPage(TASK_CODE+0x1000, cr3_tarea, phy2, 0x7);
 
 }
 

@@ -297,13 +297,13 @@ _isr71:
         cmp eax, 1; si puedo ver esa posicion
         jne devuelvo_Null
         call read_C; devuelvo que hay en esa posicion
-        pop ebx
         pop eax
+        pop ebx
         popad
         iret
 devuelvo_Null:
-        pop ebx
         pop eax
+        pop ebx
         popad
         mov eax, 0
         iret
@@ -356,26 +356,4 @@ nextClock:
                 add ebx, isrClock
                 print_text_pm ebx, 1, 0x0f, 49, 79
                 popad
-        iret
-
-global copyHomework2
-copyHomework2:
-        ;copyHomework(*p1 , *p2 , int size (cantidad de bytes a copiar))
-        ;(pop 1 = *p1)
-        ;(pop 2 = *p2)
-        ;(pop 3 = int size)
-        pop eax
-        pop ebx
-        pop ecx
-        pushad
-        
-.ciclo:        
-        cmp ecx, 0
-        je .fincopyHomework
-        dec ecx
-        mov dl, [eax]
-        mov [ebx], dl
-        jmp .ciclo
-.fincopyHomework:
-        popad
         iret
