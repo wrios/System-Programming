@@ -242,11 +242,11 @@ void tss_set_attr(tss* tss_task){
   tss_task->eflags = 0x202;
   tss_task->esp0 = 0x08003000;
   tss_task->ptl = 0x00;
-  tss_task->es = (GDT_ENTRY_DATAS_USER<<3);
-  tss_task->ds = (GDT_ENTRY_DATAS_USER<<3);
-  tss_task->fs = (GDT_ENTRY_DATAS_USER<<3);
-  tss_task->cs = (GDT_ENTRY_CODES_USER<<3);
-  tss_task->gs = (GDT_ENTRY_DATAS_USER<<3);
-  tss_task->ss = (GDT_ENTRY_DATAS_USER<<3);
+  tss_task->es = (GDT_ENTRY_DATAS_USER<<3)+3;
+  tss_task->ds = (GDT_ENTRY_DATAS_USER<<3)+3;
+  tss_task->fs = (GDT_ENTRY_DATAS_USER<<3)+3;
+  tss_task->cs = (GDT_ENTRY_CODES_USER<<3)+3;
+  tss_task->gs = (GDT_ENTRY_DATAS_USER<<3)+3;
+  tss_task->ss = (GDT_ENTRY_DATAS_USER<<3)+3;
   tss_task->ss0 = (GDT_ENTRY_DATAS_KERNEL<<3);
 }
