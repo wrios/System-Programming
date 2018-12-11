@@ -199,7 +199,9 @@ void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
   //gdt[jugador + 31].limit_0_15 = sizeof(*tss_task) && 0xFFFF;
   //gdt[jugador + 31].limit_16_19 = (sizeof(*tss_task) >> 16) && 0xFFFF;
   //Inicio directorio y tabla para la tarea
-  uint32_t thisCR3 =  mmu_initTaskDir(tss_task); 
+
+  //Se utiliza el directory del kernel para poder copiar las paginas 
+  uint32_t cr3_kernel =  mmu_initTaskDir(tss_task);
   for(uint32_t i = 0; i < 1024; i++)//mapeo el kernel y area libre de kernel a cada tarea
   {
     mmu_mapPage(i, tss_task->cr3, i, 0x3);//pd y pt como supervisor
@@ -208,9 +210,10 @@ void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
   uint32_t page1 = mmu_nextFreeTaskPage_fisica();
   uint32_t page2 = mmu_nextFreeTaskPage_fisica();
   //la tarea tiene mapeada 2 paginas virtuales, para C y D
-  mmu_mapPage(page1, thisCR3, page1, 0x7);
-  mmu_mapPage(page2, thisCR3, page2, 0x7);
-  if (jugador <= 10) {//jugador tipos A
+  mmu_mapPage(page1, cr3_kernel, page1, 0x7);
+  mmu_mapPage(page2, cr3_kernel, page2, 0x7);
+  
+  if (jugador < 10) {//jugador tipos A
     copyHomework((char* )0x10000, (char* )page1);
     copyHomework((char* )0x11000, (char* )page2);
   }
@@ -218,8 +221,9 @@ void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
     copyHomework((char* )0x12000, (char* )page1);
     copyHomework((char* )0x13000, (char* )page2);
   }
-  mmu_unmapPage(page1, thisCR3);
-  mmu_unmapPage(page2, thisCR3);
+  mmu_unmapPage(page1, cr3_kernel);
+  mmu_unmapPage(page2, cr3_kernel);
+  
   mmu_mapPage(TASK_CODE, tss_task->cr3, page1, 0X7);
   mmu_mapPage(TASK_CODE+0x1000, tss_task->cr3, page2, 0x7);
   tss_task->eip = TASK_CODE;

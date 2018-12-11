@@ -14,7 +14,6 @@ void game_init() {
     tss_array[0].eax = 64;
     tss_array[10].eax = 64;
 
-
 }
 
 void game_nextStep() {

@@ -172,7 +172,7 @@ BITS 32
     sti
     mov ax, 28<<3;[0..1]RPL = 0, [2] = 0(GDT), 11100 = 1C
     mov [sched_task_selector], ax
-    xchg bx, bx
+    ;xchg bx, bx
     jmp far [sched_task_offset]
     
     
