@@ -235,18 +235,40 @@ void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
 }
 
 void tss_set_attr(tss* tss_task){
-  tss_task->dtrap = 0x0;
-  tss_task->ldt = 0x0;
-  tss_task->ebp = 0x08002000;
-  tss_task->esp = 0x08002000;
-  tss_task->eflags = 0x202;
-  tss_task->esp0 = 0x08003000;
   tss_task->ptl = 0x00;
-  tss_task->es = (GDT_ENTRY_DATAS_USER<<3)+3;
-  tss_task->ds = (GDT_ENTRY_DATAS_USER<<3)+3;
-  tss_task->fs = (GDT_ENTRY_DATAS_USER<<3)+3;
-  tss_task->cs = (GDT_ENTRY_CODES_USER<<3)+3;
-  tss_task->gs = (GDT_ENTRY_DATAS_USER<<3)+3;
-  tss_task->ss = (GDT_ENTRY_DATAS_USER<<3)+3;
+  tss_task->unused0 = 0x0;
+  tss_task->esp0 = 0x08003000;
   tss_task->ss0 = (GDT_ENTRY_DATAS_KERNEL<<3);
+  tss_task->unused1 = 0x0;
+  tss_task->esp1 = 0x0;
+  tss_task->ss1 = 0x0;
+  tss_task->unused2 = 0x0;
+  tss_task->esp2 = 0x0;
+  tss_task->ss2 = 0x0;
+  tss_task->unused3 = 0x0;
+  tss_task->eflags = 0x202;
+  tss_task->eax = 0;
+  tss_task->ecx = 0;
+  tss_task->edx = 0;
+  tss_task->ebx = 0;
+  tss_task->esp = 0x08002000;
+  tss_task->ebp = 0x08002000;
+  tss_task->esi = 0;
+  tss_task->edi = 0;
+  tss_task->es = (GDT_ENTRY_DATAS_USER<<3)+3;
+  tss_task->unused4 = 0x0;
+  tss_task->cs = (GDT_ENTRY_CODES_USER<<3)+3;
+  tss_task->unused5 = 0x0;
+  tss_task->ss = (GDT_ENTRY_DATAS_USER<<3)+3;
+  tss_task->unused6 = 0x0;
+  tss_task->ds = (GDT_ENTRY_DATAS_USER<<3)+3;
+  tss_task->unused7 = 0x0;
+  tss_task->fs = (GDT_ENTRY_DATAS_USER<<3)+3;
+  tss_task->unused8 = 0x0;
+  tss_task->gs = (GDT_ENTRY_DATAS_USER<<3)+3;
+  tss_task->unused9 = 0x0;
+  tss_task->ldt = 0x0;
+  tss_task->unused10 = 0x0;
+  tss_task->dtrap = 0x0;
+  tss_task->iomap = 0xFFFF;
 }
