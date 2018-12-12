@@ -31,8 +31,8 @@ void copyHomework(char* kernel2, char* libre_tareas2){
 void test_copyHomework(int cr3_tarea){
     uint32_t phy = mmu_nextFreeTaskPage_fisica();
     uint32_t phy2 = mmu_nextFreeTaskPage_fisica();
-    mmu_mapPage(phy, cr3_kernel, phy, 0x7);
-    mmu_mapPage(phy2, cr3_kernel, phy2, 0x7);
+    mmu_mapPage(phy, cr3_kernel, phy, 1, 1);
+    mmu_mapPage(phy2, cr3_kernel, phy2, 1, 1);
 
     copyHomework((char*) 0x14000,(char*)  phy);
     copyHomework((char*) 0x15000,(char*)  phy2);
@@ -40,8 +40,8 @@ void test_copyHomework(int cr3_tarea){
     mmu_unmapPage(phy, cr3_kernel);
     mmu_unmapPage(phy2, cr3_kernel);
 
-    mmu_mapPage(TASK_CODE, cr3_tarea, phy, 0x7);
-    mmu_mapPage(TASK_CODE+0x1000, cr3_tarea, phy2, 0x7);
+    mmu_mapPage(TASK_CODE, cr3_tarea, phy, 1, 1);
+    mmu_mapPage(TASK_CODE+0x1000, cr3_tarea, phy2, 1, 1);
 
 }
 
@@ -76,7 +76,7 @@ void setPageTable(page_table_entry* new_page_table_entry, uint32_t attrs){
     new_page_table_entry->p = ((attrs << 31)>>31);
 }
 
-void mmu_mapPage(uint32_t virtual, uint32_t cr3, uint32_t phy, uint32_t attrs) {
+void mmu_mapPage(uint32_t virtual, uint32_t cr3, uint32_t phy, uint8_t us, uint8_t rw) {
     uint32_t PDE_OFF = virtual >> 22;//index_directory
     uint32_t PTE_OFF = (virtual << 10) >> 22;//index_table
     ///dirección base del page directory///
@@ -95,14 +95,14 @@ void mmu_mapPage(uint32_t virtual, uint32_t cr3, uint32_t phy, uint32_t attrs) {
     //page directory[PDE_OFF] para decirle que ese es el lugar donde empieza
         new_page_table_entry = (page_table_entry*) (pd[PDE_OFF].base << 12);
     }
-    pd[PDE_OFF].us = ((attrs << 29)>>31);
-    pd[PDE_OFF].rw = ((attrs << 30)>>31);
-    pd[PDE_OFF].p = ((attrs << 31)>>31);
+    pd[PDE_OFF].us = us;
+    pd[PDE_OFF].rw = rw;
+    pd[PDE_OFF].p = 1;
     ///la dirección física es multiplo de 4 k y en el descriptor va el numero sin los 3 ceros///
     new_page_table_entry[PTE_OFF].base = (phy >> 12);
-    new_page_table_entry[PTE_OFF].us = ((attrs << 29)>>31);
-    new_page_table_entry[PTE_OFF].rw = ((attrs << 30)>>31);
-    new_page_table_entry[PTE_OFF].p = ((attrs << 31)>>31);
+    new_page_table_entry[PTE_OFF].us = us;
+    new_page_table_entry[PTE_OFF].rw = rw;
+    new_page_table_entry[PTE_OFF].p = 1;
     ///invalidar cache de traduciones///
     tlbflush();
 }

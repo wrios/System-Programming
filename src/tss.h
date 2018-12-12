@@ -60,7 +60,7 @@ typedef struct str_tss {
 } __attribute__((__packed__, aligned (8))) tss;
 
 void tss_inicializar(tss* tss_task, uint32_t jugador);
-void tss_set_attr(tss* tss_task);
+void tss_set_attr(tss* tss_task, uint32_t page_pila0);
 
 extern tss tss_array[];
 void tss_init();

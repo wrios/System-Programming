@@ -162,17 +162,25 @@ BITS 32
     ;IRQ1 para teclado
     
     call sched_init
-    xchg bx, bx
+   ; xchg bx, bx
     call game_init
-    xchg bx, bx
+    ;xchg bx, bx
     ; Saltar a la primera tarea: Idle
     ;cargar indice de la tarea inicial
     mov ax, 27<<3;[0..1]RPL = 00, [2] = 0(GDT), 11001 = 1B
     ltr ax
-    sti
-    mov ax, 28<<3;[0..1]RPL = 0, [2] = 0(GDT), 11100 = 1C
-    mov [sched_task_selector], ax
     ;xchg bx, bx
+    ;sti
+    mov ax, 31<<3;[0..1]RPL = 0, [2] = 0(GDT), 11100 = 1C
+    mov [sched_task_selector], ax
+    xchg bx, bx
+
+mov eax, 0x100000
+mov cr3, eax
+
+jmp 0xc3:0x8000000
+
+
     jmp far [sched_task_offset]
     
     

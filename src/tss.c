@@ -29,10 +29,9 @@ void tss_init_gdt(uint32_t i, uint32_t cr3){
   uint32_t pag_2_fis = mmu_nextFreeTaskPage_fisica();
 
 
-  uint32_t atr = 0x3; // U/S = 0, R/W = 1, P = 1
 
-  mmu_mapPage(pag_1_vir, cr3, pag_1_fis, atr);
-  mmu_mapPage(pag_2_vir, cr3, pag_2_fis, atr);
+  mmu_mapPage(pag_1_vir, cr3, pag_1_fis, 0, 1);
+  mmu_mapPage(pag_2_vir, cr3, pag_2_fis, 0, 1);
 
   gdt[i].p = 1;
 
@@ -204,14 +203,14 @@ void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
   uint32_t cr3_kernel =  mmu_initTaskDir(tss_task);
   for(uint32_t i = 0; i < 1024; i++)//mapeo el kernel y area libre de kernel a cada tarea
   {
-    mmu_mapPage(i, tss_task->cr3, i, 0x3);//pd y pt como supervisor
+    mmu_mapPage(i, tss_task->cr3, i, 0, 1);//pd y pt como supervisor
   }
   
   uint32_t page1 = mmu_nextFreeTaskPage_fisica();
   uint32_t page2 = mmu_nextFreeTaskPage_fisica();
   //la tarea tiene mapeada 2 paginas virtuales, para C y D
-  mmu_mapPage(page1, cr3_kernel, page1, 0x7);
-  mmu_mapPage(page2, cr3_kernel, page2, 0x7);
+  mmu_mapPage(page1, cr3_kernel, page1, 1, 1);
+  mmu_mapPage(page2, cr3_kernel, page2, 1, 1);
   
   if (jugador < 10) {//jugador tipos A
     copyHomework((char* )0x10000, (char* )page1);
@@ -224,20 +223,21 @@ void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
   mmu_unmapPage(page1, cr3_kernel);
   mmu_unmapPage(page2, cr3_kernel);
   
-  mmu_mapPage(TASK_CODE, tss_task->cr3, page1, 0X7);
-  mmu_mapPage(TASK_CODE+0x1000, tss_task->cr3, page2, 0x7);
+  mmu_mapPage(TASK_CODE, tss_task->cr3, page1, 1, 1);
+  mmu_mapPage(TASK_CODE+0x1000, tss_task->cr3, page2, 1, 1);
   tss_task->eip = TASK_CODE;
   //la tercer pagina virtual es para la pila lvl0
   uint32_t page_pila0 = mmu_nextFreeKernelPage();
-  mmu_mapPage(0x08002000, tss_task->cr3, page_pila0, 0x3);
-  tss_set_attr(tss_task);
+  mmu_mapPage(page_pila0, tss_task->cr3, page_pila0, 0, 1);
+
+  tss_set_attr(tss_task, page_pila0);
 
 }
 
-void tss_set_attr(tss* tss_task){
+void tss_set_attr(tss* tss_task, uint32_t page_pila0){
   tss_task->ptl = 0x00;
   tss_task->unused0 = 0x0;
-  tss_task->esp0 = 0x08003000;
+  tss_task->esp0 = page_pila0;
   tss_task->ss0 = (GDT_ENTRY_DATAS_KERNEL<<3);
   tss_task->unused1 = 0x0;
   tss_task->esp1 = 0x0;

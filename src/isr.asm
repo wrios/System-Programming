@@ -134,6 +134,8 @@ mp_len_: equ    $ - mp_print_
 global _isr%1
 
 _isr%1:
+        xchg bx,bx
+
     mov eax, %1
     print_text_pm error_mp_msg_%1, error_mp_len_%1, 0x07, 0, 0
 
@@ -187,9 +189,10 @@ _isr32:
         str cx
         cmp ax, cx
         je .fin
-        xchg bx, bx
 
         mov [sched_task_selector], ax
+        xchg bx, bx
+
         jmp far [sched_task_offset]
 
 .fin:   popad
