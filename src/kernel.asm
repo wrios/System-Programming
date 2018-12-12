@@ -130,7 +130,7 @@ BITS 32
     ; Inicializar tss
     
     ; Inicializar tss de la tarea Idle
-    
+    xchg bx, bx
     call create_tss_descriptores
     
     call tss_idle_initial
@@ -170,17 +170,9 @@ BITS 32
     mov ax, 27<<3;[0..1]RPL = 00, [2] = 0(GDT), 11001 = 1B
     ltr ax
     ;xchg bx, bx
-    ;sti
-    mov ax, 31<<3;[0..1]RPL = 0, [2] = 0(GDT), 11100 = 1C
+    sti
+    mov ax, 28<<3;[0..1]RPL = 0, [2] = 0(GDT), 11100 = 1C
     mov [sched_task_selector], ax
-    xchg bx, bx
-
-mov eax, 0x100000
-mov cr3, eax
-
-jmp 0xc3:0x8000000
-
-
     jmp far [sched_task_offset]
     
     

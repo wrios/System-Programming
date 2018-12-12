@@ -137,6 +137,58 @@ uint32_t mmu_initTaskDir(void* tss_task2){//inicializa el directorio de una tare
     return cr3_kernel;
 }
 
+
+void mmu_mappear4mbKernelTask(uint32_t cr3) {
+ //cr3 = 0x28000 << (32-20)//
+    /*inicializar el directorio de páginas en la dirección 0x27000*/
+    ///dirección base del page directory///
+    page_dir_entry* pd = (page_dir_entry*) ((cr3 >> 12) << 12);
+    //page_table_entry *pt = (page_table_entry*) (pd[0].base<<12);
+    uint32_t freePage = mmu_nextFreeKernelPage();
+    page_table_entry *pt = (page_table_entry*) freePage;
+    
+    pd[0] = (page_dir_entry){
+        (uint8_t) 0x1,/*[0] = P(presente)*/
+        (uint8_t) 0x1,/*[1] = (R/W)(0 Read Only | 1 puede ser escrita)*/
+        (uint8_t) 0x0,/*[2] = (U/S)(0 es supervisor | 1 es usuario. En general 0->DLP=00 y 1->DLP=resto)*/
+        (uint8_t) 0x0,/*[3] = PWT*/
+        (uint8_t) 0x0,/*[4] = PCD*/
+        (uint8_t) 0x0,/*[5] = (A)(Cada vez que la pagina es accedida este bit se setea)*/
+        (uint8_t) 0x0,/*[6] = (D)(El SO la inicializa en 0, y se setea automaticamente cuando
+se escribe la página)*/
+        (uint8_t) 0x0,/*[7] = (PS)(Si es 0 decribe una tabla de paginas de 4KB, y si es 1  4MB)*/
+        (uint8_t) 0x0,/*[8] = (G)(Tiene efecto la activacion de lafuncionalidad Global, 
+que otorga ese caracter a la traduccion de esa ṕagina almacenada en la TLB. 
+La entrada no se flushea cuando se recarga el registro CR3)*/
+        (uint8_t) 0x0,/*[11..9] = (DLP)privilege-Level*/
+        (uint32_t) (freePage >> 12)/*[31..12] = Dirección base de la página*/
+    };
+    breakpoint();
+
+    //0x00000000 a 0x003FFFFF son exactamente 1024 paginas
+    for(int i = 0; i < 1024; i++)
+    {
+        //base de la pagina, base de la page_directory,base de la pagina,lvlRW1,lvlUS1
+        ///Indice del page directory & Indice del page table///
+        //uint32_t page = mmu_nextFreeKernelPage();
+        uint32_t INDEX_PTE = i;//se omiten los 12 bits(0's), por que todas las paginas son de 4kb
+
+        pt[INDEX_PTE].p = 0x1;
+        pt[INDEX_PTE].rw = 0x1;
+        pt[INDEX_PTE].us = 0x0;
+        pt[INDEX_PTE].pcd = 0x0;
+        pt[INDEX_PTE].a = 0x0; // no fue accedida
+        pt[INDEX_PTE].d = 0x0; // no esta dirty
+        pt[INDEX_PTE].pat = 0x0; //no quiero PAT
+        pt[INDEX_PTE].g = 0x0; //no es global
+        pt[INDEX_PTE].dpl = 0x0; //no es global
+        pt[INDEX_PTE].base = i; //se omiten los 12 bits(0's), por que todas las paginas son de 4kb
+        tlbflush();
+    }
+}
+
+
+
 uint32_t mmu_mappear4mbKernel() {
  //cr3 = 0x28000 << (32-20)//
     /*inicializar el directorio de páginas en la dirección 0x27000*/
