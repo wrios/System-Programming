@@ -28,7 +28,6 @@ LS_INLINE void ltr(uint16_t sel);
 LS_INLINE uint16_t rtr(void);
 LS_INLINE void hlt(void);
 LS_INLINE void breakpoint(void);
-LS_INLINE void breakpoint_(void* tss);
 
 /*
  * Implementaciones
@@ -106,12 +105,6 @@ LS_INLINE void hlt(void) {
 
 LS_INLINE void breakpoint(void) {
     __asm __volatile("xchg %%bx, %%bx" : :);
-}
-
-LS_INLINE void breakpoint_(void* a) {
-    __asm __volatile("pop %%eax" : :);
-    breakpoint();
-
 }
 
 #endif  /* !__i386_H__ */

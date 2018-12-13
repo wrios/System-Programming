@@ -22,6 +22,7 @@
 
 void sched_init();
 int16_t sched_nextTask();
+uint32_t frutaEn(int i, int j);
 
 
 typedef struct coordenada{
@@ -45,8 +46,14 @@ typedef struct scheduler{
   //10 None, 20 Player, 30 Opp, 16/32/64 Fruta
   int tablero[tam_tablero][tam_tablero];
 
+  uint32_t puntosA;
+  uint32_t puntosB;
+
 
 } schedu;
+
+void updateScreen();
+void screenInit();
 
 uint32_t chequear_vision_C(int32_t eax, int32_t ebx);
 uint32_t read_C(int32_t eax, int32_t ebx);

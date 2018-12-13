@@ -9,10 +9,11 @@
 
 void game_init() {
 
-    tss_inicializar(&tss_array[0], 0);
-    tss_inicializar(&tss_array[10], 10);
-    tss_array[0].eax = 64;
-    tss_array[10].eax = 64;
+    // inicializamos todas las tareas
+    for (int i = 0; i < 20; i++){
+        tss_inicializar(&tss_array[i], i);
+        tss_array[i].eax = 64;
+    }
 
 }
 

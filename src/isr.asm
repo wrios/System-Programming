@@ -182,17 +182,18 @@ global _isr32
 
 _isr32:
         pushad
+        xor eax, eax
         call pic_finish1
         call sched_nextTask
+        xchg bx, bx        
         shl ax, 3
+
         ;add ax, 3
         str cx
         cmp ax, cx
+
         je .fin
-
         mov [sched_task_selector], ax
-        xchg bx, bx
-
         jmp far [sched_task_offset]
 
 .fin:   popad
@@ -330,7 +331,6 @@ extern checkear_poder_div_C
 extern copiar_tarea_C
 _isr76:
         pushad
-       
         call checkear_poder_div_C; mirar espacio y peso
         cmp eax, 0; si no puedo divirme
         je menos_uno
@@ -339,6 +339,10 @@ _isr76:
 menos_uno:
         mov eax, -1
 fin76:
+        ; Salto tarea idle para completar el quantum
+        mov ax, 28<<3;[0..1]RPL = 0, [2] = 0(GDT), 11100 = 1C 
+        mov [sched_task_selector], ax
+        jmp far [sched_task_offset]  
         popad
         iret                
 

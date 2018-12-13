@@ -15,6 +15,7 @@
 #include "stdint.h"
 #include "colors.h"
 #include "defines.h"
+#include "sched.h"
 
 /* Estructura de para acceder a memoria de video */
 typedef struct ca_s {
@@ -25,6 +26,8 @@ typedef struct ca_s {
 void print(const char* text, uint32_t x, uint32_t y, uint16_t attr);
 void print_dec(uint32_t numero, uint32_t size, uint32_t x, uint32_t y, uint16_t attr);
 void print_hex(uint32_t numero, int size, uint32_t x, uint32_t y, uint16_t attr);
+
+char getCell(uint32_t ij);
 
 void screen_drawBox(uint32_t fInit, uint32_t cInit,
                     uint32_t fSize, uint32_t cSize,

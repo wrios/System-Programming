@@ -163,7 +163,6 @@ La entrada no se flushea cuando se recarga el registro CR3)*/
         (uint8_t) 0x0,/*[11..9] = (DLP)privilege-Level*/
         (uint32_t) (freePage >> 12)/*[31..12] = Dirección base de la página*/
     };
-    breakpoint();
 
     //0x00000000 a 0x003FFFFF son exactamente 1024 paginas
     for(int i = 0; i < 1024; i++)

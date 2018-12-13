@@ -65,6 +65,7 @@
 #define GDT_ENTRY_TASK_B9                50
 
 #define TSS_MAX_AMOUNT_TASKS             22
+#define TOTAL_TASKS                      20
 
 /* Offsets en la gdt */
 /* -------------------------------------------------------------------------- */

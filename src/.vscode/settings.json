@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "defines.h": "c",
+        "screen.h": "c",
+        "sched.h": "c"
+    }
+}

@@ -6,25 +6,26 @@
 */
 
 #include "screen.h"
+#include "defines.h"
 
 void pintar_pantalla(){
     //print("ASD", 20, 20, 5);
     
     for(int i = 0; i < 50; i++){   
         for(int j = 0; j < 50; j++){
-            print("a", i, j, 0b01110000);
+            print(" ", i, j, C_BG_LIGHT_GREY);
         }
     }
 
     for(int i = 59; i < 71; i++){   
         for(int j = 5; j < 8; j++){
-            print("a", i, j, 0b01000000);
+            print(" ", i, j, 0b01000000);
         }
     }
 
     for(int i = 59; i < 71; i++){   
         for(int j = 30; j < 33; j++){
-            print("a", i, j, 0b00010000);
+            print(" ", i, j, 0b00010000);
         }
     }
 
@@ -93,6 +94,14 @@ void screen_drawBox(uint32_t fInit,
     }}
 }
 
-
-
-
+char getCell(uint32_t ij){
+    if (ij == 20){
+        return C_BG_BLUE;
+    }else if(ij == 30){
+        return C_BG_RED;
+    }else if(ij == 40){
+        return C_BG_MAGENTA;
+    }else{
+        return C_BG_LIGHT_GREY;
+    }
+}

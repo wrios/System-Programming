@@ -229,7 +229,6 @@ void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
   //la tercer pagina virtual es para la pila lvl0
   uint32_t page_pila0 = mmu_nextFreeKernelPage();
   mmu_mapPage(page_pila0, tss_task->cr3, page_pila0, 0, 1);
-  breakpoint();
   mmu_mappear4mbKernelTask(tss_task->cr3);
   tss_set_attr(tss_task, page_pila0);
 
