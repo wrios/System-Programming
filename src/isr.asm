@@ -13,6 +13,8 @@ global sched_task_selector
 
 sched_task_offset:     dd 0x00
 sched_task_selector:   dw 0x00
+res_eax:   dw 0x00
+
 
 ;; PIC
 extern pic_finish1
@@ -134,8 +136,6 @@ mp_len_: equ    $ - mp_print_
 global _isr%1
 
 _isr%1:
-        xchg bx,bx
-
     mov eax, %1
     print_text_pm error_mp_msg_%1, error_mp_len_%1, 0x07, 0, 0
 
@@ -182,17 +182,16 @@ global _isr32
 
 _isr32:
         pushad
-        xor eax, eax
+        ;xchg bx, bx        
+
         call pic_finish1
         call sched_nextTask
-        xchg bx, bx        
         shl ax, 3
 
-        ;add ax, 3
         str cx
         cmp ax, cx
-
         je .fin
+
         mov [sched_task_selector], ax
         jmp far [sched_task_offset]
 
@@ -294,35 +293,48 @@ extern read_C
 ;read
 _isr71:
         pushad
-
-        push ebx; x
-        push eax; y
+        push ebx; y
+        push eax; x
         call chequear_vision_C
-        cmp eax, 1; si puedo ver esa posicion
-        jne devuelvo_Null
+        cmp eax, 0
+        je runIdle
         call read_C; devuelvo que hay en esa posicion
+        ; muevo eax a un pedazo de memoria porque sino me lo pisa el popad
+        mov [res_eax], eax
+        pop ebx 
         pop eax
-        pop ebx
+        popad
+        mov eax, [res_eax]
+        iret
+runIdle:
+        mov ax, 28<<3;[0..1]RPL = 0, [2] = 0(GDT), 11100 = 1C
+        mov [sched_task_selector], ax
+        jmp far [sched_task_offset]
+        pop ebx 
+        pop eax
         popad
         iret
-devuelvo_Null:
-        pop eax
-        pop ebx
-        popad
-        mov eax, 0
-        iret
+      
+
 
 global _isr73
 ;move
 extern move_actualizar_C
 _isr73:
         pushad
-        push ecx; distancia
         push edx; dir
+        push ecx; distancia
         call move_actualizar_C; actualiza estructuras y devuelve lo que se logro mover
-        pop edx
+        
+        mov ax, 28<<3;[0..1]RPL = 0, [2] = 0(GDT), 11100 = 1C
+        mov [sched_task_selector], ax
+        jmp far [sched_task_offset]
+
+        mov [res_eax], eax
         pop ecx
+        pop edx
         popad
+        mov eax, [res_eax]
         iret
 
 global _isr76

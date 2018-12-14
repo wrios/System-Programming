@@ -12,12 +12,13 @@
 void task() {
 
 while(1) {
-    //breakpoint();
-	for(int i=0;i<50;i++) {
+	for(int i=0;i<10;i++) {
 		syscall_move(1, Down);
 	}
-	syscall_move(1, Right);
+	//syscall_move(1, Right);
 }
+
+    //breakpoint();
 
     int32_t a = syscall_divide();
     if(a==0) {

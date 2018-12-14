@@ -10,8 +10,8 @@
 
 void task() {
 
-    int a = syscall_read(1,1);
-    if(a == 40) {
+    int a = syscall_read(-1,0);
+    if(a == 16 || a == 32 || a == 64) {
         syscall_move(1, Down);
         syscall_move(1, Right);
     }

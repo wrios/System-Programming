@@ -19,13 +19,13 @@ void pintar_pantalla(){
 
     for(int i = 59; i < 71; i++){   
         for(int j = 5; j < 8; j++){
-            print(" ", i, j, 0b01000000);
+            print(" ", i, j, C_BG_BLUE);
         }
     }
 
     for(int i = 59; i < 71; i++){   
         for(int j = 30; j < 33; j++){
-            print(" ", i, j, 0b00010000);
+            print(" ", i, j, C_BG_RED);
         }
     }
 
@@ -99,7 +99,7 @@ char getCell(uint32_t ij){
         return C_BG_BLUE;
     }else if(ij == 30){
         return C_BG_RED;
-    }else if(ij == 40){
+    }else if(ij == 16 || ij == 32 || ij == 64){
         return C_BG_MAGENTA;
     }else{
         return C_BG_LIGHT_GREY;
