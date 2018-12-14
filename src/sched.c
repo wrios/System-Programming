@@ -91,7 +91,6 @@ int16_t sched_nextTask() {
           print(" ", i, j, cell);
       }
     }*/
-   // breakpoint();
 
 
     for(int i = 0; i < 50; i++){
@@ -102,7 +101,7 @@ int16_t sched_nextTask() {
         int sum_A_puntos = 0;
         int sum_B_puntos = 0;
 
-        //Cuenta pesos de puntos de cada tarea en la posición i j
+        //Cuenta pesos y puntos de cada tarea en la posición i j
         for(int h = 0; h < 10; h++){
           if(scheduler.muertas[h] != 1 && scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
             sum_A_peso += scheduler.peso_por_tarea[h];
@@ -117,14 +116,12 @@ int16_t sched_nextTask() {
           }
         }
 
-      int ganador = 0;
-
       // Casos si alguna de las dos tiene mayor peso o son igual en peso
       if(sum_A_peso == sum_B_peso){
         for(int h = 0; h < 20; h++){
           if (scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
             scheduler.muertas[h] = true;            
-            scheduler.peso_por_tarea[h] = 0;
+            scheduler.puntos_por_tarea[h] = 0;
           }
         }
         if(frutaEn(i,j) > 0){
@@ -134,49 +131,51 @@ int16_t sched_nextTask() {
         }
         
       }else if (sum_A_peso > sum_B_peso){
-        ganador = 1;
         for(int h = 10; h < 20; h++){
           if(scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
             scheduler.muertas[h] = true;            
-            scheduler.peso_por_tarea[h] = 0;
+            scheduler.puntos_por_tarea[h] = 0;
           }
         }
         for(int h = 0; h < 10; h++){
-          if(scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
+          if(scheduler.muertas[h]==false && scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
             scheduler.puntos_por_tarea[h] += sum_B_puntos;
-            scheduler.peso_por_tarea[h] += frutaEn(i,j);
+            scheduler.puntos_por_tarea[h] += frutaEn(i,j);
             break;
           }
         }
         sum_A_puntos+=frutaEn(i,j);
         scheduler.tablero[i][j] = 20;
       }else if (sum_B_peso > sum_A_peso){
-        ganador = 2;
         for(int h = 0; h < 10; h++){
           if(scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
             scheduler.muertas[h] = true;            
-            scheduler.peso_por_tarea[h] = 0;
+            scheduler.puntos_por_tarea[h] = 0;
           }
         }  
 
         for(int h = 10; h < 20; h++){
-          if(scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
+          if(scheduler.muertas[h]==false && scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
             scheduler.puntos_por_tarea[h] += sum_A_puntos;
-            scheduler.peso_por_tarea[h] += frutaEn(i,j);
+            scheduler.puntos_por_tarea[h] += frutaEn(i,j);
             break;
           }
         }
         scheduler.tablero[i][j] = 30;
       }      
 
-      if(ganador == 1){
-        //breakpoint();
-        scheduler.puntosA+=sum_A_puntos;
-      }
+      //Calculo los puntos de A y B
+      int sumA, sumB;
+      sumA = sumB = 0;
+      for(int i=0; i<10; i++)
+        if( scheduler.muertas[i] == false )
+          sumA += scheduler.puntos_por_tarea[i];
+      scheduler.puntosA = sumA;
 
-      if(ganador == 2){
-        scheduler.puntosB+=sum_B_puntos;
-      }
+      for(int i=10; i<20; i++)
+        if( scheduler.muertas[i] == false )
+          sumB += scheduler.puntos_por_tarea[i];
+      scheduler.puntosB = sumB;
 
       }
     }
@@ -239,7 +238,7 @@ int16_t sched_nextTask() {
   if(k<20){
     Tarea_actual = k;
     print_dec(k+31, 10, 40, 5, C_BG_GREEN);
-    breakpoint();
+    //breakpoint();
     return k+31;
   }
 
@@ -253,7 +252,7 @@ int16_t sched_nextTask() {
   }
   Tarea_actual = k;
   print_dec(k+31, 10, 40, 5, C_BG_GREEN);
-  breakpoint();
+  //breakpoint();
   return k+31;
 
 }
@@ -356,13 +355,17 @@ uint32_t copiar_tarea_C(){
 
   //existe una biyeccion entre indices tareas e indices de tss
   
-  /*
+  
   tss* nueva_tss =  &tss_array[indice_nueva_tarea];
-  tss_inicializar(nueva_tss, indice_nueva_tarea);
-  */
+  nueva_tss->eip = TASK_CODE;
+  nueva_tss->esp0 = scheduler.tareas_pilas0[indice_nueva_tarea];
+  nueva_tss->ebp = 0x8002000;
+  nueva_tss->esp = 0x8002000;
+
   scheduler.muertas[indice_nueva_tarea] = false;
   scheduler.ya_jugo[indice_nueva_tarea] = true;
   scheduler.cant_llamadas_a_read_por_tarea[indice_nueva_tarea] = 0;
+  
   //inicializo informaciones de la nueva tarea
     //empieza donde esta la tarea actual
   scheduler.coordenadas_siguientes[indice_nueva_tarea] = scheduler.coordenadas_siguientes[Tarea_actual];

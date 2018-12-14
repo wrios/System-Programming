@@ -346,6 +346,7 @@ _isr76:
         cmp eax, 0; si no puedo divirme
         je menos_uno
         call copiar_tarea_C
+        xchg bx, bx
         jmp fin76
 menos_uno:
         mov eax, -1

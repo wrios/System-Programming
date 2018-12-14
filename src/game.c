@@ -10,8 +10,10 @@
 void game_init() {
 
     // inicializamos todas las tareas
-    for (int i = 0; i < 20; i++)
+    for (int i = 0; i < 20; i++){
         tss_inicializar(&tss_array[i], i);
+        scheduler.tareas_pilas0[i] = tss_array[i].esp0;
+    }
     /*
     //1==muerta
     for (int i = 0; i < 20; i++)

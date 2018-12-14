@@ -45,6 +45,8 @@ typedef struct scheduler{
   //10 None, 20 Player, 30 Opp, 16/32/64 Fruta
   int tablero[tam_tablero][tam_tablero];
 
+  uint32_t tareas_pilas0[20];
+
   uint32_t puntosA;
   uint32_t puntosB;
 
