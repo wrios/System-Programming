@@ -31,7 +31,6 @@ typedef struct coordenada{
 
 typedef struct scheduler{
   
-  uint8_t falta_jugar[cant_tareas];
   uint8_t ya_jugo[cant_tareas];
   uint8_t muertas[cant_tareas];
   

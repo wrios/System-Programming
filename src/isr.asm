@@ -182,12 +182,11 @@ global _isr32
 
 _isr32:
         pushad
-        ;xchg bx, bx        
-
+        
         call pic_finish1
-        call sched_nextTask
+        call sched_nextTask        
         shl ax, 3
-
+        add ax,3 
         str cx
         cmp ax, cx
         je .fin

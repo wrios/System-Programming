@@ -22,15 +22,15 @@ void sched_init() {
 
   //init struct sheduler
   for(int i=0; i<cant_tareas; i++)
-    scheduler.falta_jugar[i] = 0x0;
-  scheduler.falta_jugar[0]=scheduler.falta_jugar[10]=0x1;
-
+    scheduler.ya_jugo[i] = true;
+  scheduler.ya_jugo[0]=scheduler.ya_jugo[10]=false;
+/*
   for(int i=0; i<cant_tareas; i++)
     scheduler.ya_jugo[i] = 0x0;
-
+*/
   for(int i=0; i<cant_tareas; i++)
-    scheduler.muertas[i] = 0x1;
-  scheduler.muertas[0]=scheduler.muertas[10]=0x0;
+    scheduler.muertas[i] = true;
+  scheduler.muertas[0]=scheduler.muertas[10]=false;
 
   for(int i=0; i<cant_tareas; i++)
     scheduler.puntos_por_tarea[i]=0;
@@ -47,7 +47,7 @@ void sched_init() {
   for(int i=0; i<cant_tareas; i++)
     scheduler.coordenadas_actuales[i]=coor_init;
   coord a = {10,10};
-  coord b = {1,0};
+  coord b = {10,2};
   scheduler.coordenadas_actuales[0] = a;
   scheduler.coordenadas_actuales[10] = b;
 
@@ -61,7 +61,7 @@ void sched_init() {
   for(int i=0; i<tam_tablero; i++)
     for(int j=0; j<tam_tablero; j++)
       scheduler.tablero[i][j]=Non;
-  scheduler.tablero[10][10]=Playe;
+  scheduler.tablero[a.x][a.y]=Playe;
   scheduler.tablero[b.x][b.y]=Opp;
 
   //init algunas frutas (10)
@@ -76,7 +76,10 @@ void sched_init() {
 
 int16_t sched_nextTask() {
   int k = 0;
-  while(k < 20 && (scheduler.falta_jugar[k] == 0 || scheduler.muertas[k] == 1)){
+
+  while(k < 20){
+    if( scheduler.muertas[k] == false && scheduler.ya_jugo[k] == false )
+      break;
     k++;
   }
   // Paso turno
@@ -88,7 +91,7 @@ int16_t sched_nextTask() {
           print(" ", i, j, cell);
       }
     }
-    breakpoint();
+   // breakpoint();
 
 
     for(int i = 0; i < 50; i++){
@@ -167,7 +170,7 @@ int16_t sched_nextTask() {
       }      
 
       if(ganador == 1){
-        breakpoint();
+        //breakpoint();
         scheduler.puntosA+=sum_A_puntos;
       }
 
@@ -178,26 +181,16 @@ int16_t sched_nextTask() {
       }
     }
 
-    for(int i = 0; i < 20; i++){
-      if(scheduler.muertas[i] != 1)
-        scheduler.falta_jugar[i] = 1;
-    }
-
     for(int h = 0; h < 20; h++){
       scheduler.coordenadas_actuales[h] = scheduler.coordenadas_siguientes[h];
       // setear al inicio del juego coordenadas actuales y siguientes todas iguales.     
     }
-
-    
     print_dec(scheduler.puntosA, 10, 59, 5, C_BG_GREEN);
     print_dec(scheduler.puntosB, 10, 59, 30, C_BG_CYAN);
 
 
     for(int h = 0; h < 20; h++){
-      scheduler.falta_jugar[h] = 1;
-    }
-    for(int h = 0; h < 20; h++){
-      scheduler.cant_llamadas_a_read_por_tarea[h] = 0;
+      scheduler.ya_jugo[h] = false;
     }
     for(int h = 0; h < 20; h++){
       scheduler.cant_llamadas_a_read_por_tarea[h] = 0;
@@ -218,18 +211,34 @@ int16_t sched_nextTask() {
 
     //Updateo el score en la pantalla
 
-  
+    //Vuelvo a empezar
+    
 
-    k = 0;
-    while(k < 20 && (scheduler.falta_jugar[k] == 0 || scheduler.muertas[k] == 1)){
-      k++;
-    }
+      
   }else{
-    scheduler.falta_jugar[k] = 0;
+    scheduler.ya_jugo[k] = true;
   }
 
-  Tarea_actual = k;
-  return k + 31;
+/*
+Tarea_actual = k%20;
+  
+  
+  for(int i = 0; i < 50; i++) {
+    for(int j = 0; j < 50; j++) {
+      char cell = getCell(scheduler.tablero[i][j]);
+      print(" ", i, j, cell);
+    }
+  }
+
+  print_dec(k%20+31, 10, 40, 5, C_BG_GREEN);
+  breakpoint();
+  
+*/
+
+  Tarea_actual = k%20;
+  print_dec(k%20+31, 10, 40, 5, C_BG_GREEN);
+  breakpoint();
+  return k%20 + 31;
 
 }
 
@@ -274,6 +283,7 @@ uint32_t move_actualizar_C(uint32_t distancia, uint32_t dir){
   else if(dir == 4)
     a_donde_me_muevo.y = (a_donde_me_muevo.y + distancia_efectiva)%tam_tablero;
 
+  scheduler.ya_jugo[Tarea_actual] = true;
   scheduler.coordenadas_siguientes[Tarea_actual] = a_donde_me_muevo;
 
   return distancia_efectiva;
@@ -309,8 +319,9 @@ uint32_t checkear_poder_div_C(){
 }
 
 uint32_t copiar_tarea_C(){
-
+  //entra <=> (checkear_poder_div_C dio que hay espacio)
   scheduler.peso_por_tarea[Tarea_actual] /= 2;
+  scheduler.ya_jugo[Tarea_actual] = true;
 
   int indice_nueva_tarea;
   //Me fijo si la Tarea_actual es de A o B 
@@ -325,9 +336,14 @@ uint32_t copiar_tarea_C(){
   }
 
   //existe una biyeccion entre indices tareas e indices de tss
+  
+  /*
   tss* nueva_tss =  &tss_array[indice_nueva_tarea];
   tss_inicializar(nueva_tss, indice_nueva_tarea);
-
+  */
+  scheduler.muertas[indice_nueva_tarea] = false;
+  scheduler.ya_jugo[indice_nueva_tarea] = true;
+  scheduler.cant_llamadas_a_read_por_tarea[indice_nueva_tarea] = 0;
   //inicializo informaciones de la nueva tarea
     //empieza donde esta la tarea actual
   scheduler.coordenadas_siguientes[indice_nueva_tarea] = scheduler.coordenadas_siguientes[Tarea_actual];

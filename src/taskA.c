@@ -11,12 +11,12 @@
 
 void task() {
 
-while(1) {
-	for(int i=0;i<10;i++) {
+//while(1) {
+	for(int i=0;i<5;i++) {
 		syscall_move(1, Down);
 	}
 	//syscall_move(1, Right);
-}
+//}
 
     //breakpoint();
 
@@ -25,8 +25,10 @@ while(1) {
         syscall_move(1, Down);
         syscall_move(1, Down);
     } else {
+        while(1){
         syscall_move(1, Up);
         syscall_move(1, Up);
+        }
     }
 
     while(1) { __asm __volatile("mov $2, %%eax":::"eax"); }
