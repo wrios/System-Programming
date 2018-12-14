@@ -84,13 +84,13 @@ int16_t sched_nextTask() {
   }
   // Paso turno
   if (k == 20){
-
+    /*
     for(int i = 0; i < 50; i++) {
       for(int j = 0; j < 50; j++) {
           char cell = getCell(scheduler.tablero[i][j]);
           print(" ", i, j, cell);
       }
-    }
+    }*/
    // breakpoint();
 
 
@@ -123,7 +123,7 @@ int16_t sched_nextTask() {
       if(sum_A_peso == sum_B_peso){
         for(int h = 0; h < 20; h++){
           if (scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
-            scheduler.muertas[h] = 1;            
+            scheduler.muertas[h] = true;            
             scheduler.peso_por_tarea[h] = 0;
           }
         }
@@ -136,13 +136,13 @@ int16_t sched_nextTask() {
       }else if (sum_A_peso > sum_B_peso){
         ganador = 1;
         for(int h = 10; h < 20; h++){
-          if(scheduler.coordenadas_actuales[h].x == i && scheduler.coordenadas_actuales[h].y == j){
-            scheduler.muertas[h] = 1;            
+          if(scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
+            scheduler.muertas[h] = true;            
             scheduler.peso_por_tarea[h] = 0;
           }
         }
         for(int h = 0; h < 10; h++){
-          if(scheduler.coordenadas_actuales[h].x == i && scheduler.coordenadas_actuales[h].y == j){
+          if(scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
             scheduler.puntos_por_tarea[h] += sum_B_puntos;
             scheduler.peso_por_tarea[h] += frutaEn(i,j);
             break;
@@ -153,14 +153,14 @@ int16_t sched_nextTask() {
       }else if (sum_B_peso > sum_A_peso){
         ganador = 2;
         for(int h = 0; h < 10; h++){
-          if(scheduler.coordenadas_actuales[h].x == i && scheduler.coordenadas_actuales[h].y == j){
-            scheduler.muertas[h] = 1;            
+          if(scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
+            scheduler.muertas[h] = true;            
             scheduler.peso_por_tarea[h] = 0;
           }
         }  
 
         for(int h = 10; h < 20; h++){
-          if(scheduler.coordenadas_actuales[h].x == i && scheduler.coordenadas_actuales[h].y == j){
+          if(scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
             scheduler.puntos_por_tarea[h] += sum_A_puntos;
             scheduler.peso_por_tarea[h] += frutaEn(i,j);
             break;
@@ -210,17 +210,12 @@ int16_t sched_nextTask() {
     }
 
     //Updateo el score en la pantalla
-
-    //Vuelvo a empezar
     
-
-      
   }else{
     scheduler.ya_jugo[k] = true;
   }
 
 /*
-Tarea_actual = k%20;
   
   
   for(int i = 0; i < 50; i++) {
@@ -229,16 +224,37 @@ Tarea_actual = k%20;
       print(" ", i, j, cell);
     }
   }
-
-  print_dec(k%20+31, 10, 40, 5, C_BG_GREEN);
-  breakpoint();
   
 */
+  if (k == 20){
+    for(int i = 0; i < 50; i++) {
+      for(int j = 0; j < 50; j++) {
+        char cell = getCell(scheduler.tablero[i][j]);
+        print(" ", i, j, cell);
+      }
+    } 
+  }
 
-  Tarea_actual = k%20;
-  print_dec(k%20+31, 10, 40, 5, C_BG_GREEN);
+
+  if(k<20){
+    Tarea_actual = k;
+    print_dec(k+31, 10, 40, 5, C_BG_GREEN);
+    breakpoint();
+    return k+31;
+  }
+
+
+
+  k=0;
+  while(k < 20){
+    if( scheduler.muertas[k] == false && scheduler.ya_jugo[k] == false )
+       break;
+    k++;
+  }
+  Tarea_actual = k;
+  print_dec(k+31, 10, 40, 5, C_BG_GREEN);
   breakpoint();
-  return k%20 + 31;
+  return k+31;
 
 }
 
@@ -267,6 +283,9 @@ uint32_t read_C(int32_t eax, int32_t ebx){
 
 //funciones auxiliares de move
 uint32_t move_actualizar_C(uint32_t distancia, uint32_t dir){
+
+  //if( scheduler.muertas[Tarea_actual] ) return 0;
+
   int x = scheduler.coordenadas_siguientes[Tarea_actual].x;
   int y = scheduler.coordenadas_siguientes[Tarea_actual].y;
 
