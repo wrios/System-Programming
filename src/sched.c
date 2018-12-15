@@ -17,10 +17,8 @@
 schedu scheduler;
 int Tarea_actual;
 
-
 void sched_init() {
 
-  //init struct sheduler
   scheduler.termino_el_juego = false;
   scheduler.debug_mode = false;
 
@@ -54,14 +52,12 @@ void sched_init() {
   scheduler.coordenadas_siguientes[0] = a;
   scheduler.coordenadas_siguientes[10] = b;
 
-  //init struct tablero_sched_juego
   for(int i=0; i<tam_tablero; i++)
     for(int j=0; j<tam_tablero; j++)
       scheduler.tablero[i][j]=Non;
   scheduler.tablero[a.x][a.y]=Playe;
   scheduler.tablero[b.x][b.y]=Opp;
 
-  //init algunas frutas
   coord init_frutas[13] = {{0,0}, {10,12}, {10,13}, {10,14}, {10,15}, {5,20}, {5,12}, {6,29}, {29,23}, {29,40}, {29,49}, {0,40}, {30,30}};
   for(int i=0; i<13; i++){
     int x = init_frutas[i].x;
@@ -184,7 +180,7 @@ int16_t sched_nextTask() {
     // Actualizo .ya_jugo diciendo que le falta jugar a todas
     // Actualizo las # llamadas a read -> todas en 0
     // Actualizo el tablero
-    // Acutalizo los puntajes de A y B (ya lo hice)
+    // Actualizo los puntajes de A y B (ya lo fui haciendo)
     for(int h=0; h<20; h++){
       scheduler.coordenadas_actuales[h] = scheduler.coordenadas_siguientes[h];
       scheduler.ya_jugo[h] = false;
@@ -200,7 +196,7 @@ int16_t sched_nextTask() {
       }
     }
 
-    //Printeo todo
+    //Printeo tablero + info
     for(int i = 0; i < 50; i++) {
       for(int j = 0; j < 50; j++) {
         char cell = getCell(scheduler.tablero[i][j]);
@@ -245,7 +241,7 @@ int16_t sched_nextTask() {
   return k+31;
 }
 
-//funciones auxiliares de read
+/* Funciones en C para read */
 uint32_t chequear_vision_C(int32_t eax, int32_t ebx){
   int x = scheduler.coordenadas_actuales[Tarea_actual].x;
   int y = scheduler.coordenadas_actuales[Tarea_actual].y;
@@ -320,7 +316,7 @@ uint32_t checkear_poder_div_C(){
 }
 
 uint32_t copiar_tarea_C(){
-  //Pre: checkear_poder_div_C dio true
+  //Pre: checkear_poder_div_C() == true
   scheduler.peso_por_tarea[Tarea_actual] /= 2;
   scheduler.ya_jugo[Tarea_actual] = true;
 
@@ -448,7 +444,6 @@ void debug_modeC(){
   }
     
 }
-
 
 /* Funciones en C para cuando una tarea tiene un error en su ejecucion */
 void remove_taskC(){
