@@ -370,6 +370,7 @@ void debug_modeC(){
         print("Hubo un empate :o", 14, 24, C_BG_GREEN);
       }
     }
+    print("          ", 69, 1, C_FG_WHITE);
     scheduler.debug_mode = false;
   }else{
     /* limpio */
