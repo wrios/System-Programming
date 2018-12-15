@@ -15,15 +15,12 @@ sched_task_offset:     dd 0x00
 sched_task_selector:   dw 0x00
 res_eax:   dw 0x00
 
-
-;; PIC
+; PIC
 extern pic_finish1
 extern pic_finish2
-;; Sched
+; Sched
 extern sched_nextTask
 extern remove_taskC
-
-
 
 error_mp_msg_0: db     'Error! Divide Error, numero: 0'
 error_mp_len_0: equ    $ - error_mp_msg_0
@@ -149,10 +146,9 @@ _isr%1:
     ;por ejemplo: cuando una tarea muere y se necesita esperar al clock para 
     ;ejecutar la sisguiente tarea
 
-    ;off_set_idle 0x1400(mirar dibujo del enunciado)
-    ;segmento_idle 0x0(pertenece al segmento de cogido)
+    ;off_set_idle 0x1400 (mirar dibujo del enunciado)
+    ;segmento_idle 0x0 (pertenece al segmento de cogido)
 %endmacro
-
 
 ;; Rutina de atención de las EXCEPCIONES
 ;; -------------------------------------------------------------------------- ;;
@@ -176,8 +172,6 @@ ISR 17
 ISR 18
 ISR 19
 
-
-
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
 global _isr32
@@ -185,20 +179,16 @@ global _isr32
 
 _isr32:
         pushad
-        
         call pic_finish1
         call sched_nextTask        
         shl ax, 3
         str cx
         cmp ax, cx
         je .fin
-
         mov [sched_task_selector], ax
         jmp far [sched_task_offset]
-
 .fin:   popad
         iret
-
 
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
@@ -230,7 +220,6 @@ _isr33:
         je .nueve
         cmp eax, 0x0b
         je .cero
-
         cmp eax, 0x15; scancode tecla 'Y'
         je .debug_mode
 
@@ -270,7 +259,6 @@ _isr33:
 .nueve:
         print_text_pm mp_print_9, mp_len_9, 0x0f, 0, 79
         jmp .fin
-
 .fin:
         popad
         iret
@@ -305,8 +293,6 @@ runIdle:
         popad
         iret
       
-
-
 global _isr73
 ;move
 extern move_actualizar_C
@@ -347,7 +333,6 @@ fin76:
         jmp far [sched_task_offset]  
         popad
         iret                
-
 
 ;; Funciones Auxiliares
 ;; -------------------------------------------------------------------------- ;;

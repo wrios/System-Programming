@@ -10,7 +10,6 @@
 #include "isr.h"
 #include "tss.h"
 
-
 idt_entry idt[255] = { };
 
 idt_descriptor IDT_DESC = {
@@ -42,9 +41,6 @@ idt_descriptor IDT_DESC = {
     attr atributos del vector de interrupciones
     offset_0_15 + offset_16_31 offset del segmento
 */
-
-
-
 
 void idt_init() {
     IDT_ENTRY(0,(uint16_t)0x8E00);
@@ -89,12 +85,4 @@ void idt_init() {
         |000
         |4 bits sin usar(0)
         */
-
-    //reloj, teclado y 3 entradas extras
-    
-    
-    
-
-
-    // Excepciones
 }

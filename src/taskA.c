@@ -10,15 +10,15 @@
 #include "game.h"
 
 void task() {
-    int error;
+    int error = 1;
 
-    for(int i=0;i<6;i++)
-        syscall_move(1, Right);
-        
+    //for(int i=0;i<6;i++)
+        //syscall_move(1, Right);
+
 //while(1) {
 	for(int i=0;i<5;i++) {
 		syscall_move(1, Down);
-        error = (i+1)/i;
+        //error = (i+1)/i;
 	}
 	//syscall_move(1, Right);
 //}
@@ -28,7 +28,9 @@ void task() {
         syscall_move(1, Down);
         syscall_move(1, Down);
     } else {
+        a=0;
         while(1){
+        //error = error/a;//
         syscall_move(1, Up);
         syscall_move(1, Up);
         }

@@ -21,16 +21,14 @@ typedef enum e_direction {
 } e_direction_t;
 
 typedef enum e_datatype {
-    Null = 0, // no llega a ver que hay
-    None = 10,
-    Player = 20,
-    Opponent = 30,
-    Food = 40,
+    Null = 0, // Si no se llega a ver
+    None = 10, // Si no hay nada
+    Player = 20, // Si esta el jugador
+    Opponent = 30, // Si esta el oponente
+    Food = 40, // Si hay fruta  (puede ser de 16, 32 ó 64)
 } e_datatype_t;
 
-
 void game_init();
-
 void game_nextStep();
 
 #endif  /* !__GAME_H__ */

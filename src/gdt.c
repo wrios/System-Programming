@@ -50,10 +50,6 @@ gdt_entry gdt[GDT_COUNT] = {
         (uint16_t)    0x0000,         /* base[0:15]   */
         (uint8_t)     0x00,           /* base[23:16]  */
         (uint8_t)     0x02,           /* type         */ 
-         /*
-            Solamente activamos el bit de readable, ¿tiene sentido para un segmento de data?
-
-        */
         (uint8_t)     0x01,           /* s            */
         (uint8_t)     0x00,           /* dpl          */
         (uint8_t)     0x01,           /* p            */
@@ -83,7 +79,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (uint16_t)    0x99FF,         /* limit[0:15]  */
         (uint16_t)    0x0000,         /* base[0:15]   */
         (uint8_t)     0x00,           /* base[23:16]  */
-        (uint8_t)     0x02,           /* type         */ // Expand down puede no ir
+        (uint8_t)     0x02,           /* type         */
         (uint8_t)     0x01,           /* s            */
         (uint8_t)     0x03,           /* dpl          */
         (uint8_t)     0x01,           /* p            */
@@ -93,7 +89,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (uint8_t)     0x01,           /* db           */
         (uint8_t)     0x01,           /* g            */
         (uint8_t)     0x00,           /* base[31:24]  */
-    }, // Las bases del video kernel son turbias, preguntar
+    },
         [GDT_ENTRY_VIDEO_KERNEL] = (gdt_entry) {
         (uint16_t)    0x1F3F,         /* limit[0:15]  */
         (uint16_t)    0x8000,         /* base[0:15]   */
@@ -133,7 +129,6 @@ void create_tss_descriptores(){
         };
     };
     
-
     gdt[GDT_ENTRY_TASK_INIT] = (gdt_entry) {
         (uint16_t)    0x67,         // limit[0:15] 
         (uint16_t)    0x0000,         // base[0:15]  

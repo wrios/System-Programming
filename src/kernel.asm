@@ -54,8 +54,6 @@ start_pm_len equ    $ - start_pm_msg
 ;; Seccion de código.
 ;; -------------------------------------------------------------------------- ;;
 
-
-
 ;; Punto de entrada del kernel.
 BITS 16
 start:
@@ -86,7 +84,6 @@ start:
     ; Pasamos a modo protegido, 8*22 = 0xb0
     ; posicion 22 de la gdt, el descriptor del segmento codigo kernel
 
-
 MP:
     ; Establecer selectores de segmentos
 BITS 32
@@ -105,7 +102,6 @@ BITS 32
     call pintar_pantalla    
     ; Inicializar pantalla
     
-   ; mov ax, 0xD0 ; Indice de nuestro segmento de video para el kernel 26*8 (bytes)
     ; Inicializar el manejador de memoria
     ; Inicializar el directorio de paginas
     call mmu_init
@@ -120,9 +116,6 @@ BITS 32
     ; Inicializar tss de la tarea Idle
     call create_tss_descriptores
     call tss_idle_initial
-    ; Inicializar el scheduler
-
-
     ; Inicializar la IDT
     call idt_init
     ; Cargar IDT
@@ -133,6 +126,7 @@ BITS 32
     ;despues de remapear el PIC y habilitarlo, tenemos que la interrupción
     ;de reloj está mapeada a la interrupción 32 y el  teclado a la 33
     ;Leemos del teclado a través del puerto 0x60(in al, 0x60)    
+    ; Inicializar el scheduler
     call sched_init
     call game_init
     ; Saltar a la primera tarea: Idle

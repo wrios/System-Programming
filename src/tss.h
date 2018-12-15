@@ -14,7 +14,6 @@
 #include "gdt.h"
 #include "mmu.h"
 
-
 void tss_init_gdt(uint32_t i, uint32_t cr3);
 void tss_idle_initial();
 

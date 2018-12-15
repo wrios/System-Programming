@@ -32,7 +32,6 @@
 /* -------------------------------------------------------------------------- */
 #define GDT_COUNT 200
 
-// EMPIEZA EN 22 O 21?
 #define GDT_IDX_NULL_DESC                0
 #define GDT_ENTRY_CODES_KERNEL           22//0x16
 #define GDT_ENTRY_DATAS_KERNEL           23//0x17
