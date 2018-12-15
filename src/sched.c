@@ -164,18 +164,15 @@ int16_t sched_nextTask() {
         scheduler.tablero[i][j] = 30;
       }      
 
-      //Calculo los puntos de A y B
-      int sumA, sumB;
-      sumA = sumB = 0;
+      //Actualizo puntos de A y B
+      scheduler.puntosA = scheduler.puntosB = 0;
       for(int i=0; i<10; i++)
         if( scheduler.muertas[i] == false )
-          sumA += scheduler.puntos_por_tarea[i];
-      scheduler.puntosA = sumA;
+          scheduler.puntosA += scheduler.puntos_por_tarea[i];
 
       for(int i=10; i<20; i++)
         if( scheduler.muertas[i] == false )
-          sumB += scheduler.puntos_por_tarea[i];
-      scheduler.puntosB = sumB;
+          scheduler.puntosB += scheduler.puntos_por_tarea[i];
 
       }
     }
@@ -184,8 +181,9 @@ int16_t sched_nextTask() {
       scheduler.coordenadas_actuales[h] = scheduler.coordenadas_siguientes[h];
       // setear al inicio del juego coordenadas actuales y siguientes todas iguales.     
     }
-    print_dec(scheduler.puntosA, 10, 59, 5, C_BG_GREEN);
-    print_dec(scheduler.puntosB, 10, 59, 30, C_BG_CYAN);
+
+    print_dec(scheduler.puntosA, 10, 60, 6, C_BG_GREEN);
+    print_dec(scheduler.puntosB, 10, 60, 31, C_BG_CYAN);
 
 
     for(int h = 0; h < 20; h++){
@@ -207,24 +205,12 @@ int16_t sched_nextTask() {
       }
       
     }
-
-    //Updateo el score en la pantalla
     
   }else{
     scheduler.ya_jugo[k] = true;
   }
 
-/*
-  
-  
-  for(int i = 0; i < 50; i++) {
-    for(int j = 0; j < 50; j++) {
-      char cell = getCell(scheduler.tablero[i][j]);
-      print(" ", i, j, cell);
-    }
-  }
-  
-*/
+
   if (k == 20){
     for(int i = 0; i < 50; i++) {
       for(int j = 0; j < 50; j++) {
