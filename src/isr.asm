@@ -186,7 +186,6 @@ _isr32:
         call pic_finish1
         call sched_nextTask        
         shl ax, 3
-        add ax,3 
         str cx
         cmp ax, cx
         je .fin
@@ -346,7 +345,6 @@ _isr76:
         cmp eax, 0; si no puedo divirme
         je menos_uno
         call copiar_tarea_C
-        xchg bx, bx
         jmp fin76
 menos_uno:
         mov eax, -1

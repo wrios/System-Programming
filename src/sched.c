@@ -67,6 +67,31 @@ void sched_init() {
   }
 }
 
+uint32_t termino_el_juego(){
+  //Termina el juego sii no hay frutas o 
+  //no hay mas tareas de al menos un jugador
+  
+  uint32_t hay_fruta = false;
+  for(int i=0; i<50; i++)
+    for(int j=0; j<50; j++)
+      if( frutaEn(i, j) )
+        hay_fruta = true;
+
+  uint32_t murio_A = true;
+  for(int i=0; i<10; i++)
+    if( scheduler.muertas[i] == false )
+      murio_A = false;
+
+  uint32_t murio_B = true;
+  for(int i=10; i<20; i++)
+    if( scheduler.muertas[i] == false )
+      murio_B = false;
+
+  if( hay_fruta == false || murio_A || murio_B )
+    return true;
+  return false;
+}
+
 int16_t sched_nextTask() {
   int k = 0;
 
@@ -75,7 +100,7 @@ int16_t sched_nextTask() {
       break;
     k++;
   }
-  // Paso turno
+  //Paso un turno
   if (k == 20){
 
     //Resuelvo para cada casilla del tablero
@@ -95,7 +120,7 @@ int16_t sched_nextTask() {
             sum_B_peso += scheduler.peso_por_tarea[h];
           }
 
-        //Separo los tres casos posibles..
+        //Resuelvo todos los conflictos
         if(sum_A_peso == sum_B_peso){
           //Caso "ambos pesos iguales" --> mueren todas
           for(int h = 0; h < 20; h++){
@@ -174,9 +199,31 @@ int16_t sched_nextTask() {
         print(" ", i, j, cell);
       }
     } 
-    print_dec(scheduler.puntosA, 10, 60, 6, C_BG_GREEN);
-    print_dec(scheduler.puntosB, 10, 60, 31, C_BG_CYAN);
+    print("Jugador A", 61, 4, C_FG_WHITE);
+    print_dec(scheduler.puntosA, 10, 60, 6, C_FG_WHITE);
+    print("Jugador B", 61, 29, C_FG_WHITE);
+    print_dec(scheduler.puntosB, 10, 60, 31, C_FG_WHITE);
 
+    //Si termino el juego..
+    if( termino_el_juego() ){
+
+      print("Fin del juego", 17, 22, C_BG_GREEN);
+      
+      if( scheduler.puntosA > scheduler.puntosB ){
+        //gano A
+        print("Gano el jugador A :D", 14, 24, C_BG_GREEN);
+      }else if( scheduler.puntosA < scheduler.puntosB ){
+        //gano B
+        print("Gano el jugador B :c", 14, 24, C_BG_GREEN);
+      }else{
+        //Empate
+        print("Hubo un empate :o", 14, 24, C_BG_GREEN);
+      }
+
+      breakpoint();
+      return 28;//idle
+    }
+    
     k=0;
     while(k < 20){
       if( scheduler.muertas[k] == false && scheduler.ya_jugo[k] == false )
@@ -189,7 +236,7 @@ int16_t sched_nextTask() {
   }
 
   Tarea_actual = k;
-  print_dec(k+31, 10, 40, 5, C_BG_GREEN);//debugger
+  //print_dec(k+31, 10, 40, 5, C_BG_GREEN);//debugger
   return k+31;
 }
 
