@@ -21,6 +21,8 @@ int Tarea_actual;
 void sched_init() {
 
   //init struct sheduler
+  scheduler.termino_el_juego = false;
+
   for(int i=0; i<cant_tareas; i++)
     scheduler.ya_jugo[i] = true;
   scheduler.ya_jugo[0]=scheduler.ya_jugo[10]=false;
@@ -87,14 +89,19 @@ uint32_t termino_el_juego(){
     if( scheduler.muertas[i] == false )
       murio_B = false;
 
-  if( hay_fruta == false || murio_A || murio_B )
+  if( hay_fruta == false || murio_A || murio_B ){
+    scheduler.termino_el_juego = true;
     return true;
+  }
+
   return false;
 }
 
 int16_t sched_nextTask() {
+  
+  if( scheduler.termino_el_juego ) return 28;
+  
   int k = 0;
-
   while(k < 20){
     if( scheduler.muertas[k] == false && scheduler.ya_jugo[k] == false )
       break;
@@ -220,7 +227,7 @@ int16_t sched_nextTask() {
         print("Hubo un empate :o", 14, 24, C_BG_GREEN);
       }
 
-      breakpoint();
+      //breakpoint();
       return 28;//idle
     }
     

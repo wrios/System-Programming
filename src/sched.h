@@ -49,6 +49,7 @@ typedef struct scheduler{
   uint32_t puntosA;
   uint32_t puntosB;
 
+  uint32_t termino_el_juego;
 
 } schedu;
 
