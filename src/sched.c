@@ -425,10 +425,11 @@ void debug_modeC(){
     print_hex(rcr4(), 8, 26+x, 12+y, C_FG_WHITE);
     /* stack */ 
     print("stack", 22+x, 23+y, C_BG_LIGHT_GREY);
-    print_hex(tss_array[Tarea_actual].esp, 8, 22+x, 26+y, C_FG_WHITE);
-    print_hex(tss_array[Tarea_actual].esp0, 8, 22+x, 27+y, C_FG_WHITE);
-    print_hex(tss_array[Tarea_actual].esp1, 8, 22+x, 28+y, C_FG_WHITE);
-    print_hex(tss_array[Tarea_actual].esp2, 8, 22+x, 29+y, C_FG_WHITE);
+    print_hex((int)&tss_array[Tarea_actual].esp, 8, 22+x, 26+y, C_FG_WHITE);
+    print_hex((int)&tss_array[Tarea_actual].esp, 8, 22+x, 27+y, C_FG_WHITE);
+    print_hex((int)&tss_array[Tarea_actual].esp, 8, 22+x, 28+y, C_FG_WHITE);
+    print_hex((int)&tss_array[Tarea_actual].esp, 8, 22+x, 29+y, C_FG_WHITE);
+    print_hex((int)&tss_array[Tarea_actual].esp, 8, 22+x, 30+y, C_FG_WHITE);
     
     //Rectangulo lindo (?)
     for(x=8; x<42; x++){
