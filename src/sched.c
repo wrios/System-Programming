@@ -413,7 +413,7 @@ void debug_modeC(){
     print_dec(tss_array[Tarea_actual].ss, 4, 10+x, 33+y, C_FG_WHITE);
     /* eflags */
     print("eflags", 7+x, 37+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].ss, 8, 14+x, 37+y, C_FG_WHITE);
+    print_dec(tss_array[Tarea_actual].eflags, 8, 14+x, 37+y, C_FG_WHITE);
     /* cr0, cr2, cr3, cr4 */
     print("cr0", 22+x, 6+y, C_BG_LIGHT_GREY);
     print_dec(rcr0(), 8, 26+x, 6+y, C_FG_WHITE);
