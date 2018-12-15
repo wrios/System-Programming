@@ -381,54 +381,54 @@ void debug_modeC(){
     uint32_t y = 2;
     /* eax, ebx, ecx, edx, esi, edi, ebp, esp, eip */
     print("eax", 6+x, 5+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].eax, 8, 10+x, 5+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].eax, 8, 10+x, 5+y, C_FG_WHITE);
     print("ebx", 6+x, 7+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].ebx, 8, 10+x, 7+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].ebx, 8, 10+x, 7+y, C_FG_WHITE);
     print("ecx", 6+x, 9+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].ecx, 8, 10+x, 9+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].ecx, 8, 10+x, 9+y, C_FG_WHITE);
     print("edx", 6+x, 11+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].edx, 8, 10+x, 11+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].edx, 8, 10+x, 11+y, C_FG_WHITE);
     print("esi", 6+x, 13+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].esi, 8, 10+x, 13+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].esi, 8, 10+x, 13+y, C_FG_WHITE);
     print("edi", 6+x, 15+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].edi, 8, 10+x, 15+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].edi, 8, 10+x, 15+y, C_FG_WHITE);
     print("ebp", 6+x, 17+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].ebp, 8, 10+x, 17+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].ebp, 8, 10+x, 17+y, C_FG_WHITE);
     print("esp", 6+x, 19+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].esp, 8, 10+x, 19+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].esp, 8, 10+x, 19+y, C_FG_WHITE);
     print("eip", 6+x, 21+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].eip, 8, 10+x, 21+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].eip, 8, 10+x, 21+y, C_FG_WHITE);
     /* cs, ds, es, fs, gs, ss */
     print("cs", 7+x, 23+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].cs, 4, 10+x, 23+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].cs, 4, 10+x, 23+y, C_FG_WHITE);
     print("ds", 7+x, 25+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].ds, 4, 10+x, 25+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].ds, 4, 10+x, 25+y, C_FG_WHITE);
     print("es", 7+x, 27+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].es, 4, 10+x, 27+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].es, 4, 10+x, 27+y, C_FG_WHITE);
     print("fs", 7+x, 29+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].fs, 4, 10+x, 29+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].fs, 4, 10+x, 29+y, C_FG_WHITE);
     print("gs", 7+x, 31+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].gs, 4, 10+x, 31+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].gs, 4, 10+x, 31+y, C_FG_WHITE);
     print("ss", 7+x, 33+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].ss, 4, 10+x, 33+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].ss, 4, 10+x, 33+y, C_FG_WHITE);
     /* eflags */
     print("eflags", 7+x, 37+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].eflags, 8, 14+x, 37+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].eflags, 8, 14+x, 37+y, C_FG_WHITE);
     /* cr0, cr2, cr3, cr4 */
     print("cr0", 22+x, 6+y, C_BG_LIGHT_GREY);
-    print_dec(rcr0(), 8, 26+x, 6+y, C_FG_WHITE);
+    print_hex(rcr0(), 8, 26+x, 6+y, C_FG_WHITE);
     print("cr2", 22+x, 8+y, C_BG_LIGHT_GREY);
-    print_dec(rcr2(), 8, 26+x, 8+y, C_FG_WHITE);
+    print_hex(rcr2(), 8, 26+x, 8+y, C_FG_WHITE);
     print("cr3", 22+x, 10+y, C_BG_LIGHT_GREY);
-    print_dec(rcr3(), 8, 26+x, 10+y, C_FG_WHITE);
+    print_hex(rcr3(), 8, 26+x, 10+y, C_FG_WHITE);
     print("cr4", 22+x, 12+y, C_BG_LIGHT_GREY);
-    print_dec(rcr4(), 8, 26+x, 12+y, C_FG_WHITE);
+    print_hex(rcr4(), 8, 26+x, 12+y, C_FG_WHITE);
     /* stack */ 
     print("stack", 22+x, 23+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].esp, 8, 22+x, 26+y, C_FG_WHITE);
-    print_dec(tss_array[Tarea_actual].esp0, 8, 22+x, 27+y, C_FG_WHITE);
-    print_dec(tss_array[Tarea_actual].esp1, 8, 22+x, 28+y, C_FG_WHITE);
-    print_dec(tss_array[Tarea_actual].esp2, 8, 22+x, 29+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].esp, 8, 22+x, 26+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].esp0, 8, 22+x, 27+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].esp1, 8, 22+x, 28+y, C_FG_WHITE);
+    print_hex(tss_array[Tarea_actual].esp2, 8, 22+x, 29+y, C_FG_WHITE);
     
     //Rectangulo lindo (?)
     for(x=8; x<42; x++){
