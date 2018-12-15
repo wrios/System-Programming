@@ -421,17 +421,16 @@ void debug_modeC(){
     /* eflags */
     print("eflags", 7+x, 37+y, C_BG_LIGHT_GREY);
     print_dec(tss_array[Tarea_actual].ss, 8, 14+x, 37+y, C_FG_WHITE);
-    /* cr0, cr2, cr3, cr4 */  
-    //// DE DONDE SACO EL cr0, cr2, cr3, cr4 ???????????? CREO QUE AGARRE CUALQUIER COSA
+    /* cr0, cr2, cr3, cr4 */  //ESTA BIEN DE DONDE LOS SACO ??
     print("cr0", 22+x, 6+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].ss, 8, 26+x, 6+y, C_FG_WHITE);
-    print("cr1", 22+x, 8+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].ss0, 8, 26+x, 8+y, C_FG_WHITE);
-    print("cr2", 22+x, 10+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].ss1, 8, 26+x, 10+y, C_FG_WHITE);
-    print("cr3", 22+x, 12+y, C_BG_LIGHT_GREY);
-    print_dec(tss_array[Tarea_actual].ss2, 8, 26+x, 12+y, C_FG_WHITE);
-    /* stack */ //ESTO ESTA BIEN ????
+    print_dec(rcr0(), 8, 26+x, 6+y, C_FG_WHITE);
+    print("cr2", 22+x, 8+y, C_BG_LIGHT_GREY);
+    print_dec(rcr2(), 8, 26+x, 8+y, C_FG_WHITE);
+    print("cr3", 22+x, 10+y, C_BG_LIGHT_GREY);
+    print_dec(rcr3(), 8, 26+x, 10+y, C_FG_WHITE);
+    print("cr4", 22+x, 12+y, C_BG_LIGHT_GREY);
+    print_dec(rcr4(), 8, 26+x, 12+y, C_FG_WHITE);
+    /* stack */ //ESTO ESTA BIEN QUE IMPRIMA LOS esp ????
     print("stack", 22+x, 23+y, C_BG_LIGHT_GREY);
     print_dec(tss_array[Tarea_actual].esp, 8, 22+x, 26+y, C_FG_WHITE);
     print_dec(tss_array[Tarea_actual].esp0, 8, 22+x, 27+y, C_FG_WHITE);
