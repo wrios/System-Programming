@@ -29,7 +29,7 @@ void sched_init() {
     scheduler.muertas[i] = true;
   scheduler.muertas[0]=scheduler.muertas[10]=false;
 
-  scheduler.puntosA = scheduler.puntosB = 64;
+  scheduler.puntosA = scheduler.puntosB = 0;
 
   for(int i=0; i<cant_tareas; i++)
     scheduler.peso_por_tarea[i]=0;
