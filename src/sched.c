@@ -22,6 +22,7 @@ void sched_init() {
 
   //init struct sheduler
   scheduler.termino_el_juego = false;
+  scheduler.debug_mode = false;
 
   for(int i=0; i<cant_tareas; i++)
     scheduler.ya_jugo[i] = true;
@@ -99,7 +100,7 @@ uint32_t termino_el_juego(){
 
 int16_t sched_nextTask() {
   
-  if( scheduler.termino_el_juego ) return 28;
+  if( scheduler.termino_el_juego || scheduler.debug_mode ) return 28;
   
   int k = 0;
   while(k < 20){
@@ -226,7 +227,6 @@ int16_t sched_nextTask() {
         //Empate
         print("Hubo un empate :o", 14, 24, C_BG_GREEN);
       }
-
       //breakpoint();
       return 28;//idle
     }
@@ -357,5 +357,100 @@ uint32_t copiar_tarea_C(){
   scheduler.peso_por_tarea[indice_nueva_tarea] = scheduler.peso_por_tarea[Tarea_actual];
 
   return 1;
+}
+
+void debug_modeC(){
+  if( scheduler.debug_mode == true ){
+    for(int i = 0; i < 50; i++) {
+      for(int j = 0; j < 50; j++) {
+        char cell = getCell(scheduler.tablero[i][j]);
+        print(" ", i, j, cell);
+      }
+    } 
+    if( termino_el_juego() ){
+      print("Fin del juego", 17, 22, C_BG_GREEN);
+      if( scheduler.puntosA > scheduler.puntosB ){
+        print("Gano el jugador A :D", 14, 24, C_BG_GREEN);
+      }else if( scheduler.puntosA < scheduler.puntosB ){
+        print("Gano el jugador B :c", 14, 24, C_BG_GREEN);
+      }else{
+        print("Hubo un empate :o", 14, 24, C_BG_GREEN);
+      }
+    }
+    scheduler.debug_mode = false;
+  }else{
+    /* limpio */
+    for(int i = 0; i < 50; i++)
+      for(int j = 0; j < 50; j++)
+        print(" ", i, j, C_BG_LIGHT_GREY);
+    print("MODO DEBUG", 69, 1, C_FG_WHITE);  
+    uint32_t x = 5;
+    uint32_t y = 2;
+    /* eax, ebx, ecx, edx, esi, edi, ebp, esp, eip */
+    print("eax", 6+x, 5+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].eax, 8, 10+x, 5+y, C_FG_WHITE);
+    print("ebx", 6+x, 7+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].ebx, 8, 10+x, 7+y, C_FG_WHITE);
+    print("ecx", 6+x, 9+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].ecx, 8, 10+x, 9+y, C_FG_WHITE);
+    print("edx", 6+x, 11+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].edx, 8, 10+x, 11+y, C_FG_WHITE);
+    print("esi", 6+x, 13+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].esi, 8, 10+x, 13+y, C_FG_WHITE);
+    print("edi", 6+x, 15+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].edi, 8, 10+x, 15+y, C_FG_WHITE);
+    print("ebp", 6+x, 17+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].ebp, 8, 10+x, 17+y, C_FG_WHITE);
+    print("esp", 6+x, 19+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].esp, 8, 10+x, 19+y, C_FG_WHITE);
+    print("eip", 6+x, 21+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].eip, 8, 10+x, 21+y, C_FG_WHITE);
+    /* cs, ds, es, fs, gs, ss */
+    print("cs", 7+x, 23+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].cs, 4, 10+x, 23+y, C_FG_WHITE);
+    print("ds", 7+x, 25+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].ds, 4, 10+x, 25+y, C_FG_WHITE);
+    print("es", 7+x, 27+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].es, 4, 10+x, 27+y, C_FG_WHITE);
+    print("fs", 7+x, 29+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].fs, 4, 10+x, 29+y, C_FG_WHITE);
+    print("gs", 7+x, 31+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].gs, 4, 10+x, 31+y, C_FG_WHITE);
+    print("ss", 7+x, 33+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].ss, 4, 10+x, 33+y, C_FG_WHITE);
+    /* eflags */
+    print("eflags", 7+x, 37+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].ss, 8, 14+x, 37+y, C_FG_WHITE);
+    /* cr0, cr2, cr3, cr4 */  
+    //// DE DONDE SACO EL cr0, cr2, cr3, cr4 ???????????? CREO QUE AGARRE CUALQUIER COSA
+    print("cr0", 22+x, 6+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].ss, 8, 26+x, 6+y, C_FG_WHITE);
+    print("cr1", 22+x, 8+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].ss0, 8, 26+x, 8+y, C_FG_WHITE);
+    print("cr2", 22+x, 10+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].ss1, 8, 26+x, 10+y, C_FG_WHITE);
+    print("cr3", 22+x, 12+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].ss2, 8, 26+x, 12+y, C_FG_WHITE);
+    /* stack */ //ESTO ESTA BIEN ????
+    print("stack", 22+x, 23+y, C_BG_LIGHT_GREY);
+    print_dec(tss_array[Tarea_actual].esp, 8, 22+x, 26+y, C_FG_WHITE);
+    print_dec(tss_array[Tarea_actual].esp0, 8, 22+x, 27+y, C_FG_WHITE);
+    print_dec(tss_array[Tarea_actual].esp1, 8, 22+x, 28+y, C_FG_WHITE);
+    print_dec(tss_array[Tarea_actual].esp2, 8, 22+x, 29+y, C_FG_WHITE);
+    
+    //horizontales
+    for(x=8; x<42; x++){
+      print(" ", x, 42, C_FG_DARK_GREY);
+      print(" ", x, 3, C_FG_DARK_GREY);
+    }
+    //verticales
+    for(y=3; y<43; y++){
+      print(" ",7, y, C_FG_DARK_GREY);
+      print(" ",42, y, C_FG_DARK_GREY);
+    }
+    
+    scheduler.debug_mode = true;
+  }
+    
 }
 

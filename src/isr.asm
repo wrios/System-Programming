@@ -199,6 +199,7 @@ _isr32:
 
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
+extern debug_modeC
 global _isr33
 _isr33:
         pushad
@@ -208,73 +209,62 @@ _isr33:
 
         cmp eax, 0x02
         je .uno
-
         cmp eax, 0x03
         je .dos
-
         cmp eax, 0x04
         je .tres
-
         cmp eax, 0x05
         je .cuatro
-
         cmp eax, 0x06
         je .cinco
-
         cmp eax, 0x07
         je .seis
-
         cmp eax, 0x08
         je .siete
-
         cmp eax, 0x09
         je .ocho
-
         cmp eax, 0x0a
         je .nueve
-
         cmp eax, 0x0b
         je .cero
 
+        cmp eax, 0x1e;HACERLO CON EL SCAN CODE DE LA TECLA 'Y', ESTE ES EL DE LA A !!
+        je .debug_mode
+
         print_text_pm mp_print_, mp_len_, 0x0f, 0, 79 
+        jmp .fin
+
+.debug_mode:
+        call debug_modeC
         jmp .fin
 
 .cero:
         print_text_pm mp_print_0, mp_len_0, 0x0f, 0, 79 
         jmp .fin
-
 .uno:
         print_text_pm mp_print_1, mp_len_1, 0x0f, 0, 79
         jmp .fin
-
 .dos:
         print_text_pm mp_print_2, mp_len_2, 0x0f, 0, 79
         jmp .fin
-
 .tres:
         print_text_pm mp_print_3, mp_len_3, 0x0f, 0, 79
         jmp .fin
-
 .cuatro:
         print_text_pm mp_print_4, mp_len_4, 0x0f, 0, 79
         jmp .fin
-
 .cinco:
         print_text_pm mp_print_5, mp_len_5, 0x0f, 0, 79
         jmp .fin
-
 .seis:
         print_text_pm mp_print_6, mp_len_6, 0x0f, 0, 79
         jmp .fin
-
 .siete:
         print_text_pm mp_print_7, mp_len_7, 0x0f, 0, 79
         jmp .fin
-
 .ocho:
         print_text_pm mp_print_8, mp_len_8, 0x0f, 0, 79
         jmp .fin
-
 .nueve:
         print_text_pm mp_print_9, mp_len_9, 0x0f, 0, 79
         jmp .fin
