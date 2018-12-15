@@ -5,8 +5,6 @@
 
 %include "print.mac"
 
-
-
 global start
 
 extern sched_task_offset
@@ -109,29 +107,18 @@ BITS 32
     
    ; mov ax, 0xD0 ; Indice de nuestro segmento de video para el kernel 26*8 (bytes)
     ; Inicializar el manejador de memoria
-    ;call mmu_init
     ; Inicializar el directorio de paginas
-    
     call mmu_init
-    
-
-    
     ; Cargar directorio de paginas
     call mmu_mappear4mbKernel
-    
     mov eax, 0x00027000; page_directory
-    ;shl eax, 12
-
     mov cr3, eax
     ; Habilitar paginacion
     mov eax, cr0
     or eax, 0x80000000 ;habilito Unidad de paginación
     mov cr0, eax
-    ; Inicializar tss
-    
     ; Inicializar tss de la tarea Idle
     call create_tss_descriptores
-    
     call tss_idle_initial
     ; Inicializar el scheduler
 
@@ -142,28 +129,14 @@ BITS 32
     lidt [IDT_DESC]
     ; Configurar controlador de interrupciones
     call pic_reset 
-    call pic_enable
-    ; Cargar tarea inicial
-    ;call tss_init_gdt
-    ;mov edi, 
-    ;mov esi, [GDT_DESC]
-    ;add esi, (8<< 4); accediendo a la tarea IDLE dentro de la gdt
-    ;call test_mmu_initTaskDir
-    ;pic_disable
-    
+    call pic_enable    
     ;despues de remapear el PIC y habilitarlo, tenemos que la interrupción
     ;de reloj está mapeada a la interrupción 32 y el  teclado a la 33
-    ;resta habilitar las interrupciones con la intrucción sti
-
-    ;Leemos del teclado a través del puerto 0x60(in al, 0x60)
-
-    ;IRQ0 para timer
-    ;IRQ1 para teclado
-    
+    ;Leemos del teclado a través del puerto 0x60(in al, 0x60)    
     call sched_init
     call game_init
     ; Saltar a la primera tarea: Idle
-    ;cargar indice de la tarea inicial
+    ; Cargar indice de la tarea inicial
     mov ax, 27<<3;[0..1]RPL = 00, [2] = 0(GDT), 11001 = 1B
     ltr ax
     sti
@@ -171,43 +144,12 @@ BITS 32
     mov [sched_task_selector], ax
     jmp far [sched_task_offset]
     
-    
-
-    
-    
-        
-    ;jmp a la tarea IDLE
-
-    ;sti ;se activa el flag IF del registro EFLAGS
-    
-    
-    ;Para pasar a paginación, hacer un Aling 4096
-    ;Activar paginación
-    ;Armar un directorio de paginas y tablas de paginas
-    ;Poner en CR3 la dirección base del directorio de páginas
-
-
-    ; Habilitar interrupciones
-
-
-    ;Limpiar bits PCD y PWT de CR3
-        ;lo hicimos al shiftear
-    
-    ;setear el bit PG de CR0
-
-    ;int 0x47
-    
-    
-
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF
     mov ebx, 0xFFFF
     mov ecx, 0xFFFF
     mov edx, 0xFFFF
     jmp $
-
-
-
 ;; -------------------------------------------------------------------------- ;;
 
 %include "a20.asm"
