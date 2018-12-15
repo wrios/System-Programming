@@ -242,7 +242,6 @@ int16_t sched_nextTask() {
   }
 
   Tarea_actual = k;
-  //print_dec(k+31, 10, 40, 5, C_BG_GREEN);//debugger
   return k+31;
 }
 
@@ -268,7 +267,7 @@ uint32_t read_C(int32_t eax, int32_t ebx){
   return scheduler.tablero[ ((eax+x)+tam_tablero)%tam_tablero ][ ((ebx+y)+tam_tablero)%tam_tablero ];
 }
 
-//funciones auxiliares de move
+/* funciones en C para move */
 uint32_t move_actualizar_C(uint32_t distancia, uint32_t dir){
 
   int x = scheduler.coordenadas_siguientes[Tarea_actual].x;
@@ -301,13 +300,12 @@ uint32_t frutaEn(int i, int j){
   }
 }
 
-//funciones auxiliares de divide
+/* Funciones en C de divide */
 uint32_t checkear_poder_div_C(){
   uint32_t peso_tarea_actual = scheduler.peso_por_tarea[Tarea_actual];
   uint32_t peso_valido = peso_tarea_actual > 1;
   
   uint32_t espacio_tss_libre = false;
-  //Me fijo si la Tarea_actual es de A o B
   if(Tarea_actual < 10){
     for(int i = 0; i < 10; i++)
       if( scheduler.muertas[i] )
@@ -327,7 +325,6 @@ uint32_t copiar_tarea_C(){
   scheduler.ya_jugo[Tarea_actual] = true;
 
   int indice_nueva_tarea;
-  //Me fijo si la Tarea_actual es de A o B 
   if(Tarea_actual < 10){
     for(int i = 0; i < 10; i++)
       if( scheduler.muertas[i] )
@@ -358,6 +355,7 @@ uint32_t copiar_tarea_C(){
   return 1;
 }
 
+/* Funciones en C para el modo debug */ 
 void debug_modeC(){
   if( scheduler.debug_mode == true ){
     for(int i = 0; i < 50; i++) {
@@ -436,12 +434,11 @@ void debug_modeC(){
     print_dec(tss_array[Tarea_actual].esp1, 8, 22+x, 28+y, C_FG_WHITE);
     print_dec(tss_array[Tarea_actual].esp2, 8, 22+x, 29+y, C_FG_WHITE);
     
-    //horizontales
+    //Rectangulo lindo (?)
     for(x=8; x<42; x++){
       print(" ", x, 42, C_FG_DARK_GREY);
       print(" ", x, 3, C_FG_DARK_GREY);
     }
-    //verticales
     for(y=3; y<43; y++){
       print(" ",7, y, C_FG_DARK_GREY);
       print(" ",42, y, C_FG_DARK_GREY);
@@ -452,6 +449,8 @@ void debug_modeC(){
     
 }
 
+
+/* Funciones en C para cuando una tarea tiene un error en su ejecucion */
 void remove_taskC(){
   scheduler.muertas[Tarea_actual] = true;
   scheduler.peso_por_tarea[Tarea_actual] = 0;

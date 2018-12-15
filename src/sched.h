@@ -41,7 +41,7 @@ typedef struct scheduler{
   coord coordenadas_actuales[cant_tareas];
   coord coordenadas_siguientes[cant_tareas];
 
-  //10 None, 20 Player, 30 Opp, 16/32/64 Fruta
+  /* 10 None, 20 Player, 30 Opp, 16/32/64 Fruta */
   int tablero[tam_tablero][tam_tablero];
 
   uint32_t tareas_pilas0[20];

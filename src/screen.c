@@ -8,27 +8,18 @@
 #include "screen.h"
 #include "defines.h"
 
-void pintar_pantalla(){
-    //print("ASD", 20, 20, 5);
-    
-    for(int i = 0; i < 50; i++){   
-        for(int j = 0; j < 50; j++){
+void pintar_pantalla(){    
+    for(int i = 0; i < 50; i++) 
+        for(int j = 0; j < 50; j++)
             print(" ", i, j, C_BG_LIGHT_GREY);
-        }
-    }
 
-    for(int i = 59; i < 71; i++){   
-        for(int j = 5; j < 8; j++){
+    for(int i = 59; i < 71; i++)  
+        for(int j = 5; j < 8; j++)
             print(" ", i, j, C_BG_BLUE);
-        }
-    }
 
-    for(int i = 59; i < 71; i++){   
-        for(int j = 30; j < 33; j++){
+    for(int i = 59; i < 71; i++)  
+        for(int j = 30; j < 33; j++)
             print(" ", i, j, C_BG_RED);
-        }
-    }
-
 }
 
 
