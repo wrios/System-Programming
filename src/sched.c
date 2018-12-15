@@ -24,10 +24,7 @@ void sched_init() {
   for(int i=0; i<cant_tareas; i++)
     scheduler.ya_jugo[i] = true;
   scheduler.ya_jugo[0]=scheduler.ya_jugo[10]=false;
-/*
-  for(int i=0; i<cant_tareas; i++)
-    scheduler.ya_jugo[i] = 0x0;
-*/
+
   for(int i=0; i<cant_tareas; i++)
     scheduler.muertas[i] = true;
   scheduler.muertas[0]=scheduler.muertas[10]=false;
@@ -56,7 +53,6 @@ void sched_init() {
   scheduler.coordenadas_siguientes[0] = a;
   scheduler.coordenadas_siguientes[10] = b;
 
-
   //init struct tablero_sched_juego
   for(int i=0; i<tam_tablero; i++)
     for(int j=0; j<tam_tablero; j++)
@@ -64,15 +60,14 @@ void sched_init() {
   scheduler.tablero[a.x][a.y]=Playe;
   scheduler.tablero[b.x][b.y]=Opp;
 
-  //init algunas frutas (10)
+  //init algunas frutas
   coord init_frutas[13] = {{0,0}, {10,12}, {10,13}, {10,14}, {10,15}, {5,20}, {5,12}, {6,29}, {29,23}, {29,40}, {29,49}, {0,40}, {30,30}};
   for(int i=0; i<13; i++){
     int x = init_frutas[i].x;
     int y = init_frutas[i].y;
-    scheduler.tablero[x][y]=16;
+    scheduler.tablero[x][y]= i%2? 16 : 32;
   }
 }
-
 
 int16_t sched_nextTask() {
   int k = 0;
@@ -84,165 +79,134 @@ int16_t sched_nextTask() {
   }
   // Paso turno
   if (k == 20){
-    /*
-    for(int i = 0; i < 50; i++) {
-      for(int j = 0; j < 50; j++) {
-          char cell = getCell(scheduler.tablero[i][j]);
-          print(" ", i, j, cell);
-      }
-    }*/
 
-
+    //Resuelvo para cada casilla del tablero
     for(int i = 0; i < 50; i++){
       for(int j = 0; j < 50; j++){
 
-        int sum_A_peso = 0;
-        int sum_B_peso = 0;
-        int sum_A_puntos = 0;
-        int sum_B_puntos = 0;
+        int sum_A_peso, sum_B_peso, sum_A_puntos, sum_B_puntos;
+        sum_A_peso = sum_B_peso = sum_A_puntos = sum_B_puntos = 0;
 
-        //Cuenta pesos y puntos de cada tarea en la posición i j
-        for(int h = 0; h < 10; h++){
+        //Calculo pesos y puntos de tareas en (i, j)
+        for(int h = 0; h < 10; h++)
           if(scheduler.muertas[h] != 1 && scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
             sum_A_peso += scheduler.peso_por_tarea[h];
             sum_A_puntos += scheduler.puntos_por_tarea[h];
           }
-        }
-
-        for(int h = 10; h < 20; h++){
+        for(int h = 10; h < 20; h++)
           if(scheduler.muertas[h] != 1 && scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
             sum_B_peso += scheduler.peso_por_tarea[h];
             sum_B_puntos += scheduler.puntos_por_tarea[h];
           }
-        }
 
-      // Casos si alguna de las dos tiene mayor peso o son igual en peso
-      if(sum_A_peso == sum_B_peso){
-        for(int h = 0; h < 20; h++){
-          if (scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
-            scheduler.muertas[h] = true;            
-            scheduler.puntos_por_tarea[h] = 0;
+        //Separo los tres casos posibles..
+        if(sum_A_peso == sum_B_peso){
+          //Caso "ambos pesos iguales" --> mueren todas
+          for(int h = 0; h < 20; h++){
+            if (scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
+              scheduler.muertas[h] = true;            
+              scheduler.puntos_por_tarea[h] = 0;
+            }
           }
-        }
-        if(frutaEn(i,j) > 0){
-          scheduler.tablero[i][j] = frutaEn(i,j);
-        }else{
-          scheduler.tablero[i][j] = 10;
-        }
-        
-      }else if (sum_A_peso > sum_B_peso){
-        for(int h = 10; h < 20; h++){
-          if(scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
-            scheduler.muertas[h] = true;            
-            scheduler.puntos_por_tarea[h] = 0;
-          }
-        }
-        for(int h = 0; h < 10; h++){
-          if(scheduler.muertas[h]==false && scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
-            scheduler.puntos_por_tarea[h] += sum_B_puntos;
-            scheduler.puntos_por_tarea[h] += frutaEn(i,j);
-            break;
-          }
-        }
-        sum_A_puntos+=frutaEn(i,j);
-        scheduler.tablero[i][j] = 20;
-      }else if (sum_B_peso > sum_A_peso){
-        for(int h = 0; h < 10; h++){
-          if(scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
-            scheduler.muertas[h] = true;            
-            scheduler.puntos_por_tarea[h] = 0;
-          }
-        }  
+          //Queda lo que habia en ese (i, j) (fruta o nada)
+          if(frutaEn(i,j) > 0)
+            scheduler.tablero[i][j] = frutaEn(i,j);
+          else
+            scheduler.tablero[i][j] = 10;
 
-        for(int h = 10; h < 20; h++){
-          if(scheduler.muertas[h]==false && scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
-            scheduler.puntos_por_tarea[h] += sum_A_puntos;
-            scheduler.puntos_por_tarea[h] += frutaEn(i,j);
-            break;
+        }else if (sum_A_peso > sum_B_peso){
+          //Caso "A gana a B" --> mueren las de B
+          for(int h = 10; h < 20; h++){
+            if(scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
+              scheduler.muertas[h] = true;            
+              scheduler.puntos_por_tarea[h] = 0;
+            }
           }
-        }
-        scheduler.tablero[i][j] = 30;
-      }      
+          for(int h = 0; h < 10; h++){
+            if(scheduler.muertas[h]==false && scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
+              scheduler.puntos_por_tarea[h] += sum_B_puntos;
+              scheduler.puntos_por_tarea[h] += frutaEn(i,j);
+              break;//lo que se gana va al primero que encuentra el for
+            }
+          }
+          //Queda A en ese (i, j)
+          scheduler.tablero[i][j] = 20;
 
-      //Actualizo puntos de A y B
-      scheduler.puntosA = scheduler.puntosB = 0;
-      for(int i=0; i<10; i++)
-        if( scheduler.muertas[i] == false )
-          scheduler.puntosA += scheduler.puntos_por_tarea[i];
-
-      for(int i=10; i<20; i++)
-        if( scheduler.muertas[i] == false )
-          scheduler.puntosB += scheduler.puntos_por_tarea[i];
-
+        }else if (sum_B_peso > sum_A_peso){
+          //Caso "B gana a A" --> mueren las de A
+          for(int h = 0; h < 10; h++){
+            if(scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
+              scheduler.muertas[h] = true;            
+              scheduler.puntos_por_tarea[h] = 0;
+            }
+          }  
+          for(int h = 10; h < 20; h++){
+            if(scheduler.muertas[h]==false && scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
+              scheduler.puntos_por_tarea[h] += sum_A_puntos;
+              scheduler.puntos_por_tarea[h] += frutaEn(i,j);
+              break;//lo que se gana va al primero que encuentra el for
+            }
+          }
+          //Queda B en ese (i, j)
+          scheduler.tablero[i][j] = 30;
+        }      
       }
     }
 
-    for(int h = 0; h < 20; h++){
+    //Como ya termino el turno...
+    // Actualizo todas las coordenadas -> las siguientes pasan a ser las actuales
+    // Actualizo .ya_jugo diciendo que le falta jugar a todas
+    // Actualizo las # llamadas a read -> todas en 0
+    // Actualizo el tablero
+    // Acutalizo los puntajes de A y B
+    scheduler.puntosA = scheduler.puntosB = 0;
+    for(int h=0; h<20; h++){
       scheduler.coordenadas_actuales[h] = scheduler.coordenadas_siguientes[h];
-      // setear al inicio del juego coordenadas actuales y siguientes todas iguales.     
-    }
-
-    print_dec(scheduler.puntosA, 10, 60, 6, C_BG_GREEN);
-    print_dec(scheduler.puntosB, 10, 60, 31, C_BG_CYAN);
-
-
-    for(int h = 0; h < 20; h++){
       scheduler.ya_jugo[h] = false;
-    }
-    for(int h = 0; h < 20; h++){
       scheduler.cant_llamadas_a_read_por_tarea[h] = 0;
-    }
-    
-    for(int h = 0; h < 20; h++){
+      //tablero..
       int x = scheduler.coordenadas_siguientes[h].x;
       int y = scheduler.coordenadas_siguientes[h].y;
       if(scheduler.muertas[h] != 1){
-        if (h < 10){
+        if (h < 10)
           scheduler.tablero[x][y] = 20;
-        }else{
+        else
           scheduler.tablero[x][y] = 30;
-        }
       }
-      
+      //puntajes..
+      if( scheduler.muertas[h] == false ){
+        if( h<10 )
+          scheduler.puntosA += scheduler.puntos_por_tarea[h];
+        else
+          scheduler.puntosB += scheduler.puntos_por_tarea[h];
+      }
     }
-    
-  }else{
-    scheduler.ya_jugo[k] = true;
-  }
 
-
-  if (k == 20){
+    //Printeo todo
     for(int i = 0; i < 50; i++) {
       for(int j = 0; j < 50; j++) {
         char cell = getCell(scheduler.tablero[i][j]);
         print(" ", i, j, cell);
       }
     } 
+    print_dec(scheduler.puntosA, 10, 60, 6, C_BG_GREEN);
+    print_dec(scheduler.puntosB, 10, 60, 31, C_BG_CYAN);
+
+    k=0;
+    while(k < 20){
+      if( scheduler.muertas[k] == false && scheduler.ya_jugo[k] == false )
+        break;
+      k++;
+    }
+
+  }else{
+    scheduler.ya_jugo[k] = true;
   }
 
-
-  if(k<20){
-    Tarea_actual = k;
-    print_dec(k+31, 10, 40, 5, C_BG_GREEN);
-    //breakpoint();
-    return k+31;
-  }
-
-
-
-  k=0;
-  while(k < 20){
-    if( scheduler.muertas[k] == false && scheduler.ya_jugo[k] == false )
-       break;
-    k++;
-  }
   Tarea_actual = k;
-  print_dec(k+31, 10, 40, 5, C_BG_GREEN);
-  //breakpoint();
+  print_dec(k+31, 10, 40, 5, C_BG_GREEN);//debugger
   return k+31;
-
 }
-
 
 //funciones auxiliares de read
 uint32_t chequear_vision_C(int32_t eax, int32_t ebx){
@@ -269,8 +233,6 @@ uint32_t read_C(int32_t eax, int32_t ebx){
 //funciones auxiliares de move
 uint32_t move_actualizar_C(uint32_t distancia, uint32_t dir){
 
-  //if( scheduler.muertas[Tarea_actual] ) return 0;
-
   int x = scheduler.coordenadas_siguientes[Tarea_actual].x;
   int y = scheduler.coordenadas_siguientes[Tarea_actual].y;
 
@@ -292,7 +254,6 @@ uint32_t move_actualizar_C(uint32_t distancia, uint32_t dir){
 
   return distancia_efectiva;
 }
-
 
 uint32_t frutaEn(int i, int j){
   if (scheduler.tablero[i][j] == 16 || scheduler.tablero[i][j] == 32 || scheduler.tablero[i][j] == 64){
@@ -323,7 +284,7 @@ uint32_t checkear_poder_div_C(){
 }
 
 uint32_t copiar_tarea_C(){
-  //entra <=> (checkear_poder_div_C dio que hay espacio)
+  //Pre: checkear_poder_div_C dio true
   scheduler.peso_por_tarea[Tarea_actual] /= 2;
   scheduler.ya_jugo[Tarea_actual] = true;
 
@@ -340,8 +301,6 @@ uint32_t copiar_tarea_C(){
   }
 
   //existe una biyeccion entre indices tareas e indices de tss
-  
-  
   tss* nueva_tss =  &tss_array[indice_nueva_tarea];
   nueva_tss->eip = TASK_CODE;
   nueva_tss->esp0 = scheduler.tareas_pilas0[indice_nueva_tarea];
@@ -353,11 +312,11 @@ uint32_t copiar_tarea_C(){
   scheduler.cant_llamadas_a_read_por_tarea[indice_nueva_tarea] = 0;
   
   //inicializo informaciones de la nueva tarea
-    //empieza donde esta la tarea actual
+    //-> empieza donde esta la tarea actual
   scheduler.coordenadas_siguientes[indice_nueva_tarea] = scheduler.coordenadas_siguientes[Tarea_actual];
-    //con la mitad del peso
+    //-> con la mitad del peso
   scheduler.peso_por_tarea[indice_nueva_tarea] = scheduler.peso_por_tarea[Tarea_actual];
-    //con 0 puntos
+    //-> con 0 puntos
   scheduler.puntos_por_tarea[indice_nueva_tarea] = 0;
 
   return 1;
