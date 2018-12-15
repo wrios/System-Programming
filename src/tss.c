@@ -9,30 +9,17 @@
 #include "mmu.h"
 #include "gdt.h"
 
-
 tss tss_array[TSS_MAX_AMOUNT_TASKS];
 // inicializar tarea para un jugador, se llama en la función tss_inicializar
 void tss_init_gdt(uint32_t i, uint32_t cr3){
-  //mmu_initTaskDir(char jugador, uint32_t cr3);
-  /*
-  if (i >= 21 ) {
-    mmu_initTaskDir('B', cr3);
-  }else{
-    mmu_initTaskDir('A', cr3);
-  }
-  */
-  
 
   uint32_t pag_1_vir = mmu_nextFreeTaskPage_virtual();
   uint32_t pag_2_vir = mmu_nextFreeTaskPage_virtual();
   uint32_t pag_1_fis = mmu_nextFreeTaskPage_fisica();
   uint32_t pag_2_fis = mmu_nextFreeTaskPage_fisica();
 
-
-
   mmu_mapPage(pag_1_vir, cr3, pag_1_fis, 0, 1);
   mmu_mapPage(pag_2_vir, cr3, pag_2_fis, 0, 1);
-
   gdt[i].p = 1;
 
   // seteo la dirección correspondiente a la entrada de la tss de esta tarea
@@ -120,15 +107,15 @@ void tss_idle_initial() {
       (uint16_t)  0x0, // unused
       (uint16_t)  (GDT_ENTRY_CODES_KERNEL<<3), // cs
       (uint16_t)  0x0, // unused
-      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // ss segmento pila del kernel RE PREGUNTAR
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // ss segmento pila del kernel
       (uint16_t)  0x0, // unused
       (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // ds kernel
       (uint16_t)  0x0, //unused
-      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // fs kernel - PREGUNTAR
+      (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // fs kernel
       (uint16_t)  0x0, // unused
       (uint16_t)  (GDT_ENTRY_DATAS_KERNEL<<3), // gs data kernel
       (uint16_t)  0x0, //unused
-      (uint16_t)  0x0, //ldt - PREGUNTAR
+      (uint16_t)  0x0, //ldt
       (uint16_t)  0x0, //unused
       (uint16_t)  0x0, //dtrap
       (uint16_t)  0xFFFF //iomap
@@ -165,29 +152,6 @@ void tss_idle_initial() {
             (uint8_t)     0x00,           // base[31:24]
         };
     };
-
-
-  /*Iniciar pd, pt para la tarea y copiar codigo y dato*/
-  //uint32_t phy = mmu_nextFreeTaskPage_fisica();
-  //mmu_mapPage(phy, tss_array[21].cr3, phy, attr);
-  //mmu_mapPage(0x8000000, tss_array[21].cr3, phy, attr);
-  //uint32_t phy2 = mmu_nextFreeTaskPage_fisica();
-  //mmu_mapPage(0x8001000, tss_array[21].cr3, phy2, attr);
-  //mmu_mapPage(phy2, tss_array[21].cr3, phy2, attr);
-/*
-  copyHomework((char*) 0x14000,(char*)  phy);
-  copyHomework((char*) 0x15000,(char*)  phy2);
-
-  mmu_unmapPage(phy, tss_array[21].cr3);
-  mmu_unmapPage(phy2, tss_array[21].cr3);
-
-  mmu_mapPage(TASK_CODE, tss_array[21].cr3, phy, 0x7);
-  mmu_mapPage(TASK_CODE+0x1000, tss_array[21].cr3, phy2, 0x7);
-  tss_array[21].eip = TASK_CODE;
-
-
-  tss_array[21].esp = 0x27000;
-  tss_array[21].ebp = 0x27000;*/
 }
 
 void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
@@ -195,8 +159,6 @@ void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
   gdt[jugador + 31].base_0_15 = (((uint32_t)tss_task) << 16) >> 16; 
   gdt[jugador + 31].base_23_16 = (((uint32_t)tss_task) << 8) >> 24;
   gdt[jugador + 31].base_31_24 = (((uint32_t)tss_task) >> 24);
-  //gdt[jugador + 31].limit_0_15 = sizeof(*tss_task) && 0xFFFF;
-  //gdt[jugador + 31].limit_16_19 = (sizeof(*tss_task) >> 16) && 0xFFFF;
   //Inicio directorio y tabla para la tarea
 
   //Se utiliza el directory del kernel para poder copiar las paginas 
@@ -231,7 +193,6 @@ void tss_inicializar(tss* tss_task, uint32_t jugador){//inicializa una tarea
   mmu_mapPage(page_pila0, tss_task->cr3, page_pila0, 0, 1);
   mmu_mappear4mbKernelTask(tss_task->cr3);
   tss_set_attr(tss_task, page_pila0);
-
 }
 
 void tss_set_attr(tss* tss_task, uint32_t page_pila0){
