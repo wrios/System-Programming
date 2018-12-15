@@ -29,9 +29,7 @@ void sched_init() {
     scheduler.muertas[i] = true;
   scheduler.muertas[0]=scheduler.muertas[10]=false;
 
-  for(int i=0; i<cant_tareas; i++)
-    scheduler.puntos_por_tarea[i]=0;
-  //scheduler.puntos_por_tarea[0]=scheduler.puntos_por_tarea[10]=64;
+  scheduler.puntosA = scheduler.puntosB = 64;
 
   for(int i=0; i<cant_tareas; i++)
     scheduler.peso_por_tarea[i]=0;
@@ -84,19 +82,17 @@ int16_t sched_nextTask() {
     for(int i = 0; i < 50; i++){
       for(int j = 0; j < 50; j++){
 
-        int sum_A_peso, sum_B_peso, sum_A_puntos, sum_B_puntos;
-        sum_A_peso = sum_B_peso = sum_A_puntos = sum_B_puntos = 0;
+        int sum_A_peso, sum_B_peso;
+        sum_A_peso = sum_B_peso = 0;
 
-        //Calculo pesos y puntos de tareas en (i, j)
+        //Calculo pesos de tareas que caigan (i, j)
         for(int h = 0; h < 10; h++)
           if(scheduler.muertas[h] != 1 && scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
             sum_A_peso += scheduler.peso_por_tarea[h];
-            sum_A_puntos += scheduler.puntos_por_tarea[h];
           }
         for(int h = 10; h < 20; h++)
           if(scheduler.muertas[h] != 1 && scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
             sum_B_peso += scheduler.peso_por_tarea[h];
-            sum_B_puntos += scheduler.puntos_por_tarea[h];
           }
 
         //Separo los tres casos posibles..
@@ -105,7 +101,6 @@ int16_t sched_nextTask() {
           for(int h = 0; h < 20; h++){
             if (scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
               scheduler.muertas[h] = true;            
-              scheduler.puntos_por_tarea[h] = 0;
             }
           }
           //Queda lo que habia en ese (i, j) (fruta o nada)
@@ -119,13 +114,12 @@ int16_t sched_nextTask() {
           for(int h = 10; h < 20; h++){
             if(scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
               scheduler.muertas[h] = true;            
-              scheduler.puntos_por_tarea[h] = 0;
             }
           }
           for(int h = 0; h < 10; h++){
             if(scheduler.muertas[h]==false && scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
-              scheduler.puntos_por_tarea[h] += sum_B_puntos;
-              scheduler.puntos_por_tarea[h] += frutaEn(i,j);
+              scheduler.puntosA += sum_B_peso;
+              scheduler.puntosA += frutaEn(i,j);
               break;//lo que se gana va al primero que encuentra el for
             }
           }
@@ -137,13 +131,12 @@ int16_t sched_nextTask() {
           for(int h = 0; h < 10; h++){
             if(scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
               scheduler.muertas[h] = true;            
-              scheduler.puntos_por_tarea[h] = 0;
             }
           }  
           for(int h = 10; h < 20; h++){
             if(scheduler.muertas[h]==false && scheduler.coordenadas_siguientes[h].x == i && scheduler.coordenadas_siguientes[h].y == j){
-              scheduler.puntos_por_tarea[h] += sum_A_puntos;
-              scheduler.puntos_por_tarea[h] += frutaEn(i,j);
+              scheduler.puntosB += sum_A_peso;
+              scheduler.puntosB += frutaEn(i,j);
               break;//lo que se gana va al primero que encuentra el for
             }
           }
@@ -158,8 +151,7 @@ int16_t sched_nextTask() {
     // Actualizo .ya_jugo diciendo que le falta jugar a todas
     // Actualizo las # llamadas a read -> todas en 0
     // Actualizo el tablero
-    // Acutalizo los puntajes de A y B
-    scheduler.puntosA = scheduler.puntosB = 0;
+    // Acutalizo los puntajes de A y B (ya lo hice)
     for(int h=0; h<20; h++){
       scheduler.coordenadas_actuales[h] = scheduler.coordenadas_siguientes[h];
       scheduler.ya_jugo[h] = false;
@@ -172,13 +164,6 @@ int16_t sched_nextTask() {
           scheduler.tablero[x][y] = 20;
         else
           scheduler.tablero[x][y] = 30;
-      }
-      //puntajes..
-      if( scheduler.muertas[h] == false ){
-        if( h<10 )
-          scheduler.puntosA += scheduler.puntos_por_tarea[h];
-        else
-          scheduler.puntosB += scheduler.puntos_por_tarea[h];
       }
     }
 
@@ -316,8 +301,6 @@ uint32_t copiar_tarea_C(){
   scheduler.coordenadas_siguientes[indice_nueva_tarea] = scheduler.coordenadas_siguientes[Tarea_actual];
     //-> con la mitad del peso
   scheduler.peso_por_tarea[indice_nueva_tarea] = scheduler.peso_por_tarea[Tarea_actual];
-    //-> con 0 puntos
-  scheduler.puntos_por_tarea[indice_nueva_tarea] = 0;
 
   return 1;
 }
