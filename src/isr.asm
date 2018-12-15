@@ -21,7 +21,7 @@ extern pic_finish1
 extern pic_finish2
 ;; Sched
 extern sched_nextTask
-extern remove_task
+extern remove_taskC
 
 
 
@@ -138,7 +138,7 @@ global _isr%1
 _isr%1:
     mov eax, %1
     print_text_pm error_mp_msg_%1, error_mp_len_%1, 0x07, 0, 0
-    call remove_task
+    call remove_taskC
     jmp 0xB0:0xCACA
     ;jmp off_set_idle:segmento_idle, salta a la tarea idle (codigo en 0x14000)
     ;idle es una tarea que se ejecuta cuando necesitas pasar el tiempo

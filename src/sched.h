@@ -35,7 +35,6 @@ typedef struct scheduler{
   uint8_t muertas[cant_tareas];
   
   int peso_por_tarea[cant_tareas];
-  int puntos_por_tarea[cant_tareas];
   
   int cant_llamadas_a_read_por_tarea[cant_tareas];
   
