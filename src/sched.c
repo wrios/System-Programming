@@ -227,7 +227,6 @@ int16_t sched_nextTask() {
         //Empate
         print("Hubo un empate :o", 14, 24, C_BG_GREEN);
       }
-      //breakpoint();
       return 28;//idle
     }
     
@@ -456,4 +455,15 @@ void debug_modeC(){
 void remove_taskC(){
   scheduler.muertas[Tarea_actual] = true;
   scheduler.peso_por_tarea[Tarea_actual] = 0;
+  if( termino_el_juego() ){
+    scheduler.termino_el_juego = true;
+    print("Fin del juego", 17, 22, C_BG_GREEN);
+    if( scheduler.puntosA > scheduler.puntosB ){
+      print("Gano el jugador A :D", 14, 24, C_BG_GREEN);
+    }else if( scheduler.puntosA < scheduler.puntosB ){
+      print("Gano el jugador B :c", 14, 24, C_BG_GREEN);
+    }else{
+      print("Hubo un empate :o", 14, 24, C_BG_GREEN);
+    }
+  }
 }

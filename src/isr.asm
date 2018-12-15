@@ -25,7 +25,7 @@ extern remove_taskC
 
 
 
-error_mp_msg_0: db     'Error! Divide Error, aprende a dividir gato, numero: 0'
+error_mp_msg_0: db     'Error! Divide Error, numero: 0'
 error_mp_len_0: equ    $ - error_mp_msg_0
 
 error_mp_msg_1: db     'Error! Debug, numero: 1'
@@ -139,7 +139,10 @@ _isr%1:
     mov eax, %1
     print_text_pm error_mp_msg_%1, error_mp_len_%1, 0x07, 0, 0
     call remove_taskC
-    jmp 0xB0:0xCACA
+    ;;;jmp 0xB0:0xCACA
+    mov ax, 28<<3
+    mov [sched_task_selector], ax
+    jmp far [sched_task_offset]
     ;jmp off_set_idle:segmento_idle, salta a la tarea idle (codigo en 0x14000)
     ;idle es una tarea que se ejecuta cuando necesitas pasar el tiempo
     ;offset_idle fruta
@@ -237,7 +240,6 @@ _isr33:
 .debug_mode:
         call debug_modeC
         jmp .fin
-
 .cero:
         print_text_pm mp_print_0, mp_len_0, 0x0f, 0, 79 
         jmp .fin

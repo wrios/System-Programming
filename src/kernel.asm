@@ -130,7 +130,6 @@ BITS 32
     ; Inicializar tss
     
     ; Inicializar tss de la tarea Idle
-    xchg bx, bx
     call create_tss_descriptores
     
     call tss_idle_initial
@@ -162,9 +161,7 @@ BITS 32
     ;IRQ1 para teclado
     
     call sched_init
-   ; xchg bx, bx
     call game_init
-    ;xchg bx, bx
     ; Saltar a la primera tarea: Idle
     ;cargar indice de la tarea inicial
     mov ax, 27<<3;[0..1]RPL = 00, [2] = 0(GDT), 11001 = 1B
