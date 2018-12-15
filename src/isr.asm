@@ -228,7 +228,7 @@ _isr33:
         cmp eax, 0x0b
         je .cero
 
-        cmp eax, 0x1e;HACERLO CON EL SCAN CODE DE LA TECLA 'Y', ESTE ES EL DE LA A !!
+        cmp eax, 0x15; scancode tecla 'Y'
         je .debug_mode
 
         print_text_pm mp_print_, mp_len_, 0x0f, 0, 79 
