@@ -453,3 +453,12 @@ void debug_modeC(){
     
 }
 
+void remove_task(){
+
+  if(Tarea_actual < 10)
+    scheduler.puntosA = scheduler.puntosA - scheduler.puntos_por_tarea[Tarea_actual];
+  else
+    scheduler.puntosB = scheduler.puntosB - scheduler.puntos_por_tarea[Tarea_actual];
+  scheduler.puntos_por_tarea[Tarea_actual] = 0;
+  scheduler.muertas[Tarea_actual] = true;
+}
