@@ -351,3 +351,38 @@ nextClock:
                 print_text_pm ebx, 1, 0x0f, 49, 79
                 popad
         iret
+
+global print_videokernel
+print_videokernel:
+        pushad
+        mov ecx, 0
+    .printGrey:
+	; 80x50 * 2 bytes: 	5000 bytes
+	; Espacio con bg gris : 0x0720
+	; Segmento de video (8) 0000 0000 0100 0000
+        
+        mov eax, 0x7020
+	mov [fs:ecx], ax
+        add ecx, 2
+	cmp ecx, 8000
+	jl .printGrey
+
+    mov ebx, 0
+    mov ecx, 100
+    .printColBlack:
+        cmp ecx, 8100
+        je .fin_prinBlack
+        .printFilaBlack:
+                mov eax, 0x0
+	        mov [fs:ecx], ax
+                add ecx, 2
+                add ebx,2
+                cmp ebx, 60
+                jne .printFilaBlack
+                mov ebx, 0
+                add ecx, 100        
+        jmp .printColBlack
+.fin_prinBlack:
+    xchg bx, bx
+    popad
+    ret

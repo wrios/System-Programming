@@ -7,6 +7,8 @@
 
 global start
 
+extern print_videokernel
+
 extern sched_task_offset
 extern sched_task_selector
 
@@ -99,7 +101,8 @@ BITS 32
     mov ebp, 0x27000
     mov esp, 0x27000
     ; Imprimir mensaje de bienvenida
-    call pintar_pantalla    
+    call print_videokernel
+    ;call pintar_pantalla    
     ; Inicializar pantalla
     
     ; Inicializar el manejador de memoria
